@@ -1,0 +1,7 @@
+.grade-badge {
+  display: inline-block;
+  font-size: 56rpx;
+  font-weight: 700;
+  padding: 16rpx 48rpx;
+  border-radius: 24rpx;
+}

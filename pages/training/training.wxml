@@ -1,0 +1,58 @@
+<view class="page training-page">
+  <!-- 顶部：进度 + 结束按钮 -->
+  <view class="training-header">
+    <view class="text-sm text-muted">
+      <text class="bold">{{moduleTitle}}</text>
+      <text wx:if="{{isSpeed}}"> · 第 {{displayIndex}}/{{questionCount}} 题</text>
+      <text wx:else> · 第 {{displayIndex}} 题</text>
+    </view>
+    <button class="btn btn-ghost btn-sm" bindtap="endTraining">结束</button>
+  </view>
+
+  <!-- 题目 -->
+  <view class="question-area">
+    <view class="question-text question-big">{{questionText}}</view>
+  </view>
+
+  <!-- 答案输入框 -->
+  <view class="answer-display {{feedback && !feedback.correct ? 'answer-wrong' : ''}}">
+    <text wx:if="{{input}}">{{input}}</text>
+    <text wx:else class="placeholder">输入答案</text>
+  </view>
+
+  <!-- 反馈（仅训练模式） -->
+  <view wx:if="{{awaitingContinue}}" class="feedback-area">
+    <view wx:if="{{feedback.correct}}" class="alert alert-success">
+      ✓ 正确
+      <text wx:if="{{feedback.errorRate !== null}}" class="text-sm">（误差 {{feedback.errorRate}}%）</text>
+    </view>
+    <view wx:else class="alert alert-danger">
+      <view>✕ 错误</view>
+      <view class="text-sm">正确答案：{{feedback.correctAnswer}}</view>
+      <view wx:if="{{feedback.errorRate !== null}}" class="text-sm">误差 {{feedback.errorRate}}%</view>
+    </view>
+    <button class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="continueNext">继续</button>
+  </view>
+
+  <!-- 数字键盘 -->
+  <view class="keypad-wrap">
+    <view class="keypad">
+      <button class="key" data-key="7" bindtap="onKeyTap">7</button>
+      <button class="key" data-key="8" bindtap="onKeyTap">8</button>
+      <button class="key" data-key="9" bindtap="onKeyTap">9</button>
+      <button class="key key-fn" data-key="del" bindtap="onKeyTap">⌫</button>
+      <button class="key" data-key="4" bindtap="onKeyTap">4</button>
+      <button class="key" data-key="5" bindtap="onKeyTap">5</button>
+      <button class="key" data-key="6" bindtap="onKeyTap">6</button>
+      <button class="key key-fn" data-key="clear" bindtap="onKeyTap">清空</button>
+      <button class="key" data-key="1" bindtap="onKeyTap">1</button>
+      <button class="key" data-key="2" bindtap="onKeyTap">2</button>
+      <button class="key" data-key="3" bindtap="onKeyTap">3</button>
+      <button class="key key-fn" data-key="restart" bindtap="restartQuestion">重开</button>
+      <button wx:if="{{allowNegative}}" class="key" data-key="neg" bindtap="onKeyTap">+/−</button>
+      <button wx:else class="key" data-key="0" bindtap="onKeyTap">0</button>
+      <button class="key" data-key="." bindtap="onKeyTap">.</button>
+      <button class="key key-submit" bindtap="submit">提交</button>
+    </view>
+  </view>
+</view>

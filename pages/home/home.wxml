@@ -1,0 +1,52 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <view class="page-title">训练分类</view>
+      <view class="page-subtitle">选择一个分类开始训练</view>
+    </view>
+  </view>
+
+  <!-- 分类网格 -->
+  <view class="category-grid">
+    <view
+      wx:for="{{categories}}"
+      wx:key="key"
+      class="category-card {{item.available ? '' : 'category-card-disabled'}}"
+      data-key="{{item.key}}"
+      bindtap="openCategory"
+    >
+      <view class="category-icon">{{item.icon}}</view>
+      <view class="category-title">
+        {{item.title}}
+        <text wx:if="{{!item.available}}" class="badge badge-muted">敬请期待</text>
+      </view>
+      <view class="category-desc">{{item.description}}</view>
+    </view>
+  </view>
+
+  <!-- 今日概览 -->
+  <view class="section" style="margin-top: 40rpx">
+    <view class="section-title">今日概览</view>
+    <view wx:if="{{overview}}" class="stat-grid">
+      <view class="stat">
+        <view class="stat-label">今日训练组</view>
+        <view class="stat-value stat-value-sm">{{overview.today.sessionCount}}</view>
+      </view>
+      <view class="stat">
+        <view class="stat-label">今日题目</view>
+        <view class="stat-value stat-value-sm">{{overview.today.questionCount}}</view>
+      </view>
+      <view class="stat">
+        <view class="stat-label">今日正确率</view>
+        <view class="stat-value stat-value-sm">{{todayAccuracy}}</view>
+      </view>
+      <view class="stat">
+        <view class="stat-label">平均单题</view>
+        <view class="stat-value stat-value-sm">{{todayAvg}}</view>
+      </view>
+    </view>
+    <view wx:else class="alert alert-info">完成一组训练后，这里会显示今日训练情况。</view>
+  </view>
+
+  <view class="text-xs text-muted">本地优先，训练数据仅保存在本机。</view>
+</view>

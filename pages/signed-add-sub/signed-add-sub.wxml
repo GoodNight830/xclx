@@ -1,0 +1,41 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <view class="page-title">正负运算</view>
+      <view class="page-subtitle">两位数加减（含正负数）· 点击即开始</view>
+    </view>
+  </view>
+
+  <view class="card section">
+    <view class="row-between">
+      <view class="card-title">当前配置</view>
+      <button class="btn btn-ghost btn-sm" bindtap="goSettings">修改设置</button>
+    </view>
+    <view class="stat-grid" style="margin-top: 20rpx">
+      <view class="stat">
+        <view class="stat-label">默认模式</view>
+        <view class="stat-value stat-value-sm">{{settings.defaultMode === 'speed' ? '竞速模式' : '训练模式'}}</view>
+      </view>
+      <view class="stat">
+        <view class="stat-label">题目数量</view>
+        <view class="stat-value stat-value-sm">{{settings.defaultQuestionCount}} 题</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card section">
+    <view class="card-title">训练模式</view>
+    <view class="card-subtitle">无限练习 · 即时纠错 · 用户主动结束</view>
+    <button class="btn btn-primary btn-lg btn-block" style="margin-top: 20rpx" data-mode="training" bindtap="start">开始训练模式</button>
+  </view>
+
+  <view class="card section">
+    <view class="card-title">竞速模式</view>
+    <view class="card-subtitle">{{settings.defaultQuestionCount}} 题 · 完成后结算 · 训练过程中不提示正确 / 错误</view>
+    <button class="btn btn-primary btn-lg btn-block" style="margin-top: 20rpx" data-mode="speed" bindtap="start">开始竞速模式</button>
+  </view>
+
+  <view class="alert alert-info section">
+    <view class="text-sm">本模块为纯练习，不参与 AI 解读与能力诊断。</view>
+  </view>
+</view>

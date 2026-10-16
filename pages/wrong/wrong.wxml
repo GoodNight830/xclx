@@ -1,0 +1,50 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <view class="page-title">错题本</view>
+      <view class="page-subtitle">未掌握 {{activeCount}} 题 · 已掌握 {{masteredCount}} 题</view>
+    </view>
+    <button class="btn btn-outline btn-sm" bindtap="toggleSelectMode">{{selectMode ? '取消' : '批量'}}</button>
+  </view>
+
+  <!-- 批量操作 -->
+  <view wx:if="{{selectMode}}" class="card section">
+    <view class="text-sm">已选 {{selectedIds.length}} 题</view>
+    <button class="btn btn-primary btn-block" style="margin-top: 16rpx" bindtap="batchMaster">标记为已掌握</button>
+  </view>
+
+  <!-- Tab -->
+  <view class="tabs">
+    <button
+      wx:for="{{tabs}}"
+      wx:key="key"
+      class="tab {{tab === item.key ? 'active' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="switchTab"
+    >{{item.label}}</button>
+  </view>
+
+  <view wx:if="{{list.length === 0}}" class="empty">当前分类下没有错题记录。</view>
+
+  <view wx:else class="card">
+    <view class="list">
+      <view wx:for="{{list}}" wx:key="id" class="list-item" style="align-items: flex-start">
+        <view wx:if="{{selectMode}}" style="margin-right: 16rpx; margin-top: 4rpx" data-id="{{item.id}}" bindtap="toggleSelect">
+          <text style="font-size: 36rpx">{{item.selected ? '☑' : '☐'}}</text>
+        </view>
+        <view class="list-item-main">
+          <view class="question-text" style="font-size: 30rpx">{{item.question}}</view>
+          <view class="list-item-meta mono">答案 {{item.correctAnswer}} · 错 {{item.wrongCount}} 次</view>
+          <view class="list-item-meta">最近错误 {{item.lastWrongLabel}}</view>
+        </view>
+        <button class="btn btn-sm {{item.status === 'mastered' ? 'btn-outline' : 'btn-secondary'}}" data-id="{{item.id}}" bindtap="toggleMastered">
+          {{item.status === 'mastered' ? '取消掌握' : '已掌握'}}
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <button wx:if="{{activeCount > 0 && !selectMode}}" class="btn btn-primary btn-block" style="margin-top: 24rpx" bindtap="startReview">
+    错题重练（{{activeCount}} 题）
+  </button>
+</view>

@@ -1,0 +1,77 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <view class="page-title">五位数 ÷ 三位数</view>
+      <view class="page-subtitle">点击即开始，参数在设置中配置</view>
+    </view>
+  </view>
+
+  <!-- 当前配置 -->
+  <view class="card section">
+    <view class="row-between">
+      <view class="card-title">当前配置</view>
+      <button class="btn btn-ghost btn-sm" bindtap="goSettings">修改设置</button>
+    </view>
+    <view class="stat-grid" style="margin-top: 20rpx">
+      <view class="stat">
+        <view class="stat-label">默认模式</view>
+        <view class="stat-value stat-value-sm">{{settings.defaultMode === 'speed' ? '竞速模式' : '训练模式'}}</view>
+      </view>
+      <view class="stat">
+        <view class="stat-label">题目数量</view>
+        <view class="stat-value stat-value-sm">{{settings.defaultQuestionCount}} 题</view>
+      </view>
+      <view class="stat">
+        <view class="stat-label">允许误差</view>
+        <view class="stat-value stat-value-sm">{{settings.defaultAllowedErrorRate}}%</view>
+      </view>
+      <view class="stat">
+        <view class="stat-label">出题来源</view>
+        <view class="stat-value stat-value-sm">{{hasReinforcement ? '普通 + 薄弱强化' : '普通训练'}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 训练模式 -->
+  <view class="card section">
+    <view class="card-title">训练模式</view>
+    <view class="card-subtitle">无限练习 · 即时纠错 · 用户主动结束</view>
+    <button class="btn btn-primary btn-lg btn-block" style="margin-top: 20rpx" data-mode="training" bindtap="start">开始训练模式</button>
+  </view>
+
+  <!-- 竞速模式 -->
+  <view class="card section">
+    <view class="card-title">竞速模式</view>
+    <view class="card-subtitle">{{settings.defaultQuestionCount}} 题 · 完成后结算 · 训练过程中不提示正确 / 错误</view>
+    <button class="btn btn-primary btn-lg btn-block" style="margin-top: 20rpx" data-mode="speed" bindtap="start">开始竞速模式</button>
+    <view class="field-hint">等级只由「是否全对 + 总用时」决定，正确率仅用于统计分析。</view>
+  </view>
+
+  <!-- 薄弱点强化 -->
+  <view wx:if="{{hasReinforcement}}" class="card section">
+    <view class="card-title">个人薄弱点强化</view>
+    <view class="card-subtitle">系统会自动提高以下除数范围的出题比例：</view>
+    <view class="list" style="margin-top: 16rpx">
+      <view wx:for="{{weakRanges}}" wx:key="id" class="list-item">
+        <view class="list-item-main">
+          <view class="question-text" style="font-size: 28rpx">除数 {{item.rangeMin}}–{{item.rangeMax}}</view>
+        </view>
+        <text class="badge badge-warning">错误率 {{item.errorRateLabel}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错题重练 -->
+  <view wx:if="{{wrongCount > 0}}" class="card section">
+    <view class="card-title">错题重练</view>
+    <view class="card-subtitle">当前有 {{wrongCount}} 道未掌握错题，重练会新建训练组并记录新的训练数据。</view>
+    <button class="btn btn-secondary btn-block" style="margin-top: 20rpx" bindtap="startWrongReview">开始错题重练（{{wrongCount}} 题）</button>
+  </view>
+
+  <!-- AI 诊断 -->
+  <view class="card section">
+    <view class="card-title">AI 诊断</view>
+    <view class="card-subtitle">用自然语言解释本模块的薄弱范围，并给出下一步训练计划</view>
+    <button class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="goAi">进入 AI 诊断</button>
+  </view>
+</view>

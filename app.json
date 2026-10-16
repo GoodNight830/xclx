@@ -1,0 +1,47 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/basic/basic",
+    "pages/five-divide-three/five-divide-three",
+    "pages/signed-add-sub/signed-add-sub",
+    "pages/training/training",
+    "pages/result/result",
+    "pages/wrong/wrong",
+    "pages/history/history",
+    "pages/weak/weak",
+    "pages/diagnosis/diagnosis",
+    "pages/ai/ai",
+    "pages/profile/profile",
+    "pages/settings/settings",
+    "pages/coming-soon/coming-soon"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#f2f6f2",
+    "navigationBarTitleText": "基础计算训练",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f2f6f2"
+  },
+  "tabBar": {
+    "color": "#8a93a6",
+    "selectedColor": "#2f9e6b",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "个人数据"
+      },
+      {
+        "pagePath": "pages/settings/settings",
+        "text": "设置"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

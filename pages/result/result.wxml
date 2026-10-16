@@ -1,0 +1,62 @@
+<view class="page">
+  <view wx:if="{{session}}">
+    <!-- 等级 -->
+    <view class="card section" style="text-align: center">
+      <view class="grade-badge {{gradeClass}}">{{gradeLabel}}</view>
+      <view class="card-subtitle" style="margin-top: 16rpx">{{gradeDescription}}</view>
+    </view>
+
+    <!-- 成绩统计 -->
+    <view class="section">
+      <view class="section-title">成绩统计</view>
+      <view class="stat-grid">
+        <view class="stat">
+          <view class="stat-label">正确 / 总题</view>
+          <view class="stat-value">{{session.correctCount}}/{{session.answeredCount}}</view>
+        </view>
+        <view class="stat">
+          <view class="stat-label">正确率</view>
+          <view class="stat-value">{{accuracy}}</view>
+        </view>
+        <view class="stat">
+          <view class="stat-label">总用时</view>
+          <view class="stat-value stat-value-sm">{{totalElapsedLabel}}</view>
+        </view>
+        <view class="stat">
+          <view class="stat-label">平均单题</view>
+          <view class="stat-value stat-value-sm">{{avgElapsedLabel}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 逐题回顾 -->
+    <view class="section">
+      <view class="section-title">逐题回顾</view>
+      <view class="card">
+        <view class="list">
+          <view wx:for="{{records}}" wx:key="id" class="list-item">
+            <view class="list-item-main">
+              <view class="row" style="gap: 12rpx">
+                <text class="text-xs text-muted">{{index + 1}}.</text>
+                <text class="question-text" style="font-size: 28rpx">{{item.question}}</text>
+                <text class="{{item.correct ? 'text-success bold' : 'text-danger bold'}}">{{item.correct ? '✓' : '✕'}}</text>
+              </view>
+              <view wx:if="{{!item.correct}}" class="list-item-meta mono">
+                答案 {{item.userAnswer !== null && item.userAnswer !== undefined ? item.userAnswer : '—'}} → {{item.correctAnswer}}
+              </view>
+            </view>
+            <button class="btn btn-ghost btn-sm" data-index="{{index}}" bindtap="toggleBookmark">
+              {{bookmarkStates[item.id] ? '★' : '☆'}}
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作 -->
+    <view class="btn-row" style="margin-top: 20rpx">
+      <button class="btn btn-primary" bindtap="trainAgain">再来一组</button>
+      <button class="btn btn-outline" bindtap="goHome">返回首页</button>
+    </view>
+  </view>
+</view>

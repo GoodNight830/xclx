@@ -1,0 +1,55 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <view class="page-title">能力诊断</view>
+      <view class="page-subtitle">长期基线与近期变化分开计算，本地分析无需联网</view>
+    </view>
+  </view>
+
+  <!-- 模块切换 -->
+  <view wx:if="{{moduleOptions.length > 1}}" class="section">
+    <view class="field-label">诊断模块</view>
+    <picker range="{{moduleOptions}}" range-key="title" value="{{selectedModule}}" bindchange="switchModule">
+      <view class="input" style="display: flex; align-items: center">{{selectedModuleTitle}}</view>
+    </picker>
+  </view>
+
+  <view wx:if="{{!hasData}}" class="empty">还没有可诊断的数据，完成一组训练后这里会显示长期与近期能力变化。</view>
+
+  <view wx:else>
+    <!-- 薄弱范围 -->
+    <view class="section">
+      <view class="collapse-header" bindtap="toggleFocus">
+        <view class="collapse-title">薄弱范围</view>
+        <view class="collapse-meta">
+          <text class="collapse-chevron {{focusExpanded ? 'open' : ''}}"></text>
+        </view>
+      </view>
+      <view wx:if="{{focusExpanded}}" class="collapse-content">
+        <view class="text-xs text-muted">最近7天样本至少10题才下结论</view>
+        <view wx:if="{{focusRanges.length}}" class="card" style="margin-top: 16rpx">
+          <view class="list">
+            <view wx:for="{{focusRanges}}" wx:key="rangeMin" class="list-item" style="align-items: flex-start">
+              <view class="list-item-main">
+                <view class="row" style="gap: 12rpx">
+                  <text class="bold">除数 {{item.rangeMin}}–{{item.rangeMax}}</text>
+                  <text class="badge {{item.trendBadgeClass}}">{{item.trendLabel}}</text>
+                </view>
+                <view class="list-item-meta">最近7天错误率 {{item.recent7ErrorRate}}（{{item.recent7.sampleCount}}题） · 长期 {{item.lifetimeErrorRate}} · 可信度 {{item.confidenceLabel}}</view>
+              </view>
+            </view>
+          </view>
+        </view>
+        <view wx:else class="alert alert-info" style="margin-top: 16rpx">各范围的近期样本尚不足，系统暂不判断薄弱范围。</view>
+        <view wx:if="{{improvedCount}}" class="text-sm text-success" style="margin-top: 12rpx">已有 {{improvedCount}} 个范围呈改善趋势。</view>
+      </view>
+    </view>
+
+    <!-- AI 解读入口 -->
+    <view class="card section">
+      <view class="card-title">AI 智能解读</view>
+      <view class="card-subtitle">用自然语言解释薄弱范围，并给出训练计划（独立页面）</view>
+      <button class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="goAi">进入 AI 解读</button>
+    </view>
+  </view>
+</view>

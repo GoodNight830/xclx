@@ -1,0 +1,9 @@
+{
+  "name": "xclx-miniprogram",
+  "version": "1.0.0",
+  "description": "基础计算训练系统 - 微信小程序版（从 Web 版 Vue3 迁移）",
+  "private": true,
+  "scripts": {
+    "test": "node test-core.cjs"
+  }
+}

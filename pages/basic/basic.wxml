@@ -1,0 +1,118 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <view class="page-title">基础计算</view>
+      <view class="page-subtitle">选择题型进入训练，或一键快速开始</view>
+    </view>
+  </view>
+
+  <view wx:if="{{errorMessage}}" class="alert alert-danger section">{{errorMessage}}</view>
+
+  <!-- 快速开始 -->
+  <view class="section">
+    <view class="section-title">快速开始</view>
+    <view class="card">
+      <view class="card-title">五位数 ÷ 三位数</view>
+      <view class="text-sm text-muted" style="margin-top: 8rpx">
+        最近常用：{{recentModeLabel}} · {{settings.defaultQuestionCount}} 题 · 允许误差 {{settings.defaultAllowedErrorRate}}%
+      </view>
+      <view class="btn-row" style="margin-top: 20rpx">
+        <button class="btn btn-primary" bindtap="startPractice">开始练习（{{recentModeLabel}}）</button>
+        <button class="btn btn-outline btn-sm" data-mode="training" bindtap="startPractice">训练模式</button>
+        <button class="btn btn-outline btn-sm" data-mode="speed" bindtap="startPractice">竞速模式</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 全部题型 -->
+  <view class="section">
+    <view class="section-title">全部题型</view>
+    <view style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16rpx">
+      <button
+        wx:for="{{topics}}"
+        wx:key="key"
+        class="btn {{item.available ? 'btn-primary' : 'btn-outline'}}"
+        disabled="{{!item.available}}"
+        data-key="{{item.key}}"
+        bindtap="openTopic"
+      >{{item.title}}</button>
+    </view>
+    <view class="field-hint" style="margin-top: 12rpx">灰色题型即将上线，当前已开放五位数 ÷ 三位数与正负运算。</view>
+  </view>
+
+  <!-- 今日概览 -->
+  <view class="section">
+    <view class="section-title">今日概览</view>
+    <view wx:if="{{loading}}" class="empty">正在加载数据…</view>
+    <view wx:else class="stat-grid">
+      <view class="stat">
+        <view class="stat-label">今日训练组数</view>
+        <view class="stat-value stat-value-sm">{{overview.today.sessionCount}}</view>
+      </view>
+      <view class="stat">
+        <view class="stat-label">今日题目数</view>
+        <view class="stat-value stat-value-sm">{{overview.today.questionCount}}</view>
+      </view>
+      <view class="stat">
+        <view class="stat-label">今日正确率</view>
+        <view class="stat-value stat-value-sm">{{todayAccuracy}}</view>
+      </view>
+      <view class="stat">
+        <view class="stat-label">平均单题用时</view>
+        <view class="stat-value stat-value-sm">{{todayAvg}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 薄弱点提示 -->
+  <view class="section">
+    <view class="section-title">薄弱点提示</view>
+    <view wx:if="{{weakHint}}" class="card">
+      <view class="text-sm" style="margin-bottom: 20rpx">{{weakHint}}</view>
+      <button class="btn btn-secondary btn-sm" data-page="weak" bindtap="goTo">查看薄弱点</button>
+    </view>
+    <view wx:else class="alert alert-info">暂无薄弱点，系统会持续分析你的错误分布</view>
+  </view>
+
+  <!-- 训练工具 -->
+  <view class="section">
+    <view class="section-title">训练工具</view>
+    <view class="card">
+      <view class="list">
+        <view class="list-item" data-page="wrong" bindtap="goTo">
+          <view class="list-item-main">
+            <view class="bold">📕 错题本</view>
+            <view class="text-sm text-muted">未掌握 {{unmasteredWrongCount}} 题</view>
+          </view>
+          <text class="text-muted">›</text>
+        </view>
+        <view class="list-item" data-page="profile" bindtap="goTo">
+          <view class="list-item-main">
+            <view class="bold">📈 训练记录</view>
+            <view class="text-sm text-muted">历史统计与每日趋势</view>
+          </view>
+          <text class="text-muted">›</text>
+        </view>
+        <view class="list-item" data-page="weak" bindtap="goTo">
+          <view class="list-item-main">
+            <view class="bold">🎯 薄弱点</view>
+            <view class="text-sm text-muted">个人薄弱除数范围</view>
+          </view>
+          <text class="text-muted">›</text>
+        </view>
+        <view class="list-item" data-page="diagnosis" bindtap="goTo">
+          <view class="list-item-main">
+            <view class="bold">◉ 能力诊断</view>
+            <view class="text-sm text-muted">长期基线、近期变化与 AI 解读</view>
+          </view>
+          <text class="text-muted">›</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{unmasteredWrongCount > 0 && !loading}}" class="section">
+    <button class="btn btn-primary btn-block" bindtap="startWrongReview">错题重练（{{unmasteredWrongCount}} 题）</button>
+    <view class="field-hint">错题重练会新建训练组并记录新的训练数据，不会修改历史记录。</view>
+  </view>
+</view>

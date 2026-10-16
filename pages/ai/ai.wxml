@@ -1,0 +1,103 @@
+<view class="page">
+  <view class="page-header">
+    <view>
+      <view class="page-title">AI 解读</view>
+      <view class="page-subtitle">选择模块，让 AI 解释薄弱范围并给出训练计划</view>
+    </view>
+  </view>
+
+  <!-- 模块切换 -->
+  <view class="section">
+    <view class="field-label">分析模块</view>
+    <picker range="{{moduleOptions}}" range-key="title" value="{{selectedModule}}" bindchange="switchModule">
+      <view class="input" style="display: flex; align-items: center">{{selectedModuleTitle}}</view>
+    </picker>
+    <view class="field-hint">仅发送该模块的聚合统计数据，不发送逐题答案。</view>
+  </view>
+
+  <view wx:if="{{errorText}}" class="alert alert-danger section">{{errorText}}</view>
+
+  <view wx:if="{{!hasData}}" class="empty">还没有可分析的数据，完成一组训练后 AI 才能生成解读。</view>
+
+  <view wx:else>
+    <!-- 解读卡片 -->
+    <view class="card section">
+      <view class="row-between">
+        <view>
+          <view class="card-title">解读</view>
+          <view class="card-subtitle">仅发送聚合数据，不发送逐题答案</view>
+        </view>
+        <text wx:if="{{latestAi}}" class="badge">{{latestAi.model}}</text>
+      </view>
+
+      <block wx:if="{{latestAi}}">
+        <view class="bold" style="margin-top: 20rpx">{{latestAi.report.summary}}</view>
+
+        <view class="collapse-header" style="margin-top: 16rpx" bindtap="toggleDetail">
+          <view class="collapse-meta">{{aiDetailExpanded ? '收起详情' : '查看详情'}}</view>
+          <text class="collapse-chevron {{aiDetailExpanded ? 'open' : ''}}"></text>
+        </view>
+
+        <view wx:if="{{aiDetailExpanded}}" class="collapse-content">
+          <view class="list">
+            <view wx:for="{{latestAi.report.findings}}" wx:key="index" class="list-item" style="align-items: flex-start">
+              <view class="list-item-main">
+                <view class="bold">{{item.title}}</view>
+                <view class="text-sm">{{item.evidence}}</view>
+                <view wx:if="{{item.recommendation}}" class="text-sm text-success" style="margin-top: 8rpx">建议：{{item.recommendation}}</view>
+                <view class="text-xs text-muted">样本 {{item.sampleCount}} · 可信度 {{item.confidence}} · {{item.limitation}}</view>
+              </view>
+            </view>
+          </view>
+
+          <view wx:if="{{latestAi.report.nextPlan.length}}" class="card" style="background: #f8faf8; margin-top: 20rpx">
+            <view class="bold" style="margin-bottom: 12rpx">下一步训练计划</view>
+            <view class="list">
+              <view wx:for="{{latestAi.report.nextPlan}}" wx:key="index" class="list-item">
+                <view class="text-sm">{{item.action}}</view>
+              </view>
+            </view>
+          </view>
+
+          <view wx:if="{{latestAi.report.uncertainty.length}}" class="alert alert-info" style="margin-top: 20rpx">
+            <view class="bold" style="margin-bottom: 8rpx">系统修正说明</view>
+            <view wx:for="{{latestAi.report.uncertainty}}" wx:key="index" class="text-sm">{{item}}</view>
+          </view>
+        </view>
+      </block>
+
+      <view wx:else class="text-sm text-muted" style="margin-top: 20rpx">尚未生成 AI 报告。点击下方按钮生成。</view>
+
+      <view class="btn-row" style="margin-top: 20rpx">
+        <button wx:if="{{canAnalyze}}" class="btn btn-primary" bindtap="generate" disabled="{{generating || (latestAi && latestAi.dataHash === diagnosis.dataHash)}}">
+          {{generating ? '正在分析 ' + elapsedSeconds + 's' : (latestAi && latestAi.dataHash === diagnosis.dataHash ? '数据无变化' : '生成 AI 报告')}}
+        </button>
+        <button wx:else class="btn btn-outline" bindtap="goSettings">配置 AI 服务</button>
+      </view>
+    </view>
+
+    <!-- 历史报告 -->
+    <view wx:if="{{aiHistory.length}}" class="section">
+      <view class="collapse-header" bindtap="toggleHistory">
+        <view class="collapse-title">历史报告</view>
+        <view class="collapse-meta">{{aiHistory.length}} 份 <text class="collapse-chevron {{historyExpanded ? 'open' : ''}}"></text></view>
+      </view>
+      <view wx:if="{{historyExpanded}}" class="collapse-content">
+        <view class="card" style="margin-top: 16rpx">
+          <view class="list">
+            <view wx:for="{{aiHistory}}" wx:key="id" class="list-item" style="align-items: flex-start">
+              <view class="list-item-main">
+                <view class="row" style="gap: 12rpx; flex-wrap: wrap">
+                  <text class="bold">{{item.createdAt}}</text>
+                  <text wx:if="{{item.id === latestAi.id}}" class="badge badge-success">最新</text>
+                  <text class="badge badge-muted">{{item.model}}</text>
+                </view>
+                <view class="text-sm text-muted" style="margin-top: 8rpx">{{item.questionCount}} 题 · {{item.report.summary}}</view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
