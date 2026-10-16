@@ -36,7 +36,7 @@
         <view class="list">
           <view wx:for="{{records}}" wx:key="id" class="list-item">
             <view class="list-item-main">
-              <view class="row" style="gap: 12rpx">
+              <view class="row">
                 <text class="text-xs text-muted">{{index + 1}}.</text>
                 <text class="question-text" style="font-size: 28rpx">{{item.question}}</text>
                 <text class="{{item.correct ? 'text-success bold' : 'text-danger bold'}}">{{item.correct ? '✓' : '✕'}}</text>

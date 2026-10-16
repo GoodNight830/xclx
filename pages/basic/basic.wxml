@@ -27,11 +27,11 @@
   <!-- 全部题型 -->
   <view class="section">
     <view class="section-title">全部题型</view>
-    <view style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16rpx">
+    <view class="topic-grid">
       <button
         wx:for="{{topics}}"
         wx:key="key"
-        class="btn {{item.available ? 'btn-primary' : 'btn-outline'}}"
+        class="btn topic-btn {{item.available ? 'btn-primary' : 'btn-outline'}}"
         disabled="{{!item.available}}"
         data-key="{{item.key}}"
         bindtap="openTopic"

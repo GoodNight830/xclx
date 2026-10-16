@@ -1,6 +1,13 @@
 /**
  * 全局样式（迁移自 Web 版 main.css，精简为小程序 WXSS 语法）。
  * 移动优先，主色 #2f9e6b（绿色），配合浅色背景。
+ *
+ * 小程序兼容性说明（重要）：
+ * - 不使用 CSS Grid（display:grid / grid-template-columns），
+ *   因为低版本基础库 / 低端 Android 内核不支持，会崩成单列。
+ *   统一改用 flex + flex-wrap + 百分比宽度模拟网格。
+ * - 不使用 flex 的 gap 属性（部分基础库不支持），改用 margin 控制间距。
+ * - 所有 button 统一重置默认 margin/padding/line-height，避免尺寸溢出。
  */
 
 page {
@@ -62,11 +69,12 @@ page {
   margin: 8rpx 0 0;
 }
 
-/* 按钮 */
+/* 按钮（统一重置小程序 button 默认样式） */
 .btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0;
   padding: 0 32rpx;
   height: 88rpx;
   border-radius: 16rpx;
@@ -75,6 +83,7 @@ page {
   border: 2rpx solid transparent;
   box-sizing: border-box;
   line-height: 1;
+  background-color: transparent;
 }
 .btn::after { border: none; }
 .btn-primary {
@@ -124,11 +133,48 @@ page {
   display: flex;
   align-items: center;
 }
+/* 行内元素间距（替代 flex gap，兼容不支持 gap 的基础库） */
+.row > view + view,
+.row > button + button,
+.row > text + text,
+.row > view + button,
+.row > button + view,
+.row > view + text,
+.row > text + view,
+.row > button + text,
+.row > text + button {
+  margin-left: 12rpx;
+}
+/* 允许换行的行布局，用于徽章/标签组 */
+.row-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.row-wrap > view,
+.row-wrap > button,
+.row-wrap > text {
+  margin-right: 12rpx;
+  margin-bottom: 12rpx;
+}
+.row-wrap > view:last-child,
+.row-wrap > button:last-child,
+.row-wrap > text:last-child {
+  margin-right: 0;
+}
 .btn-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
   align-items: center;
+}
+.btn-row > button,
+.btn-row > view {
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
+}
+.btn-row > button:last-child,
+.btn-row > view:last-child {
+  margin-right: 0;
 }
 
 /* 文本工具 */
@@ -158,9 +204,11 @@ page {
 .list-item-main {
   display: flex;
   flex-direction: column;
-  gap: 6rpx;
   flex: 1;
   min-width: 0;
+}
+.list-item-main > view + view {
+  margin-top: 6rpx;
 }
 .list-item-meta {
   font-size: 24rpx;
@@ -169,14 +217,14 @@ page {
 
 /* 徽章 */
 .badge {
-  display: inline-flex;
-  align-items: center;
+  display: inline-block;
   padding: 4rpx 16rpx;
   border-radius: 999rpx;
   font-size: 22rpx;
   font-weight: 600;
   background: #eef1f6;
   color: #4a5264;
+  line-height: 1.5;
 }
 .badge-success { background: #eaf7f0; color: #2f9e6b; }
 .badge-warning { background: #fef4e6; color: #f59e0b; }
@@ -245,6 +293,7 @@ page {
   color: #4a5264;
   border-radius: 12rpx;
   background: transparent;
+  margin: 0;
 }
 .tab::after { border: none; }
 .tab.active {
@@ -254,13 +303,16 @@ page {
   box-shadow: 0 2rpx 8rpx rgba(31, 36, 48, 0.06);
 }
 
-/* 统计卡网格 */
+/* 统计卡网格（2 列，用 flex 模拟 grid，兼容所有机型） */
 .stat-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -8rpx;
 }
 .stat {
+  width: calc(50% - 16rpx);
+  margin: 0 8rpx 16rpx;
+  box-sizing: border-box;
   background: #f8faf8;
   border-radius: 16rpx;
   padding: 20rpx;
@@ -320,13 +372,16 @@ page {
 }
 .collapse-content { margin-top: 16rpx; }
 
-/* 分类卡片（首页） */
+/* 分类卡片（首页，2 列，用 flex 模拟 grid） */
 .category-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20rpx;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -10rpx;
 }
 .category-card {
+  width: calc(50% - 20rpx);
+  margin: 0 10rpx 20rpx;
+  box-sizing: border-box;
   background: #ffffff;
   border-radius: 20rpx;
   padding: 28rpx;
@@ -363,14 +418,17 @@ page {
   word-break: break-all;
 }
 
-/* 数字键盘 */
+/* 数字键盘（4 列，用 flex 模拟 grid；每个按键占 25% 宽） */
 .keypad {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -8rpx;
 }
 .key {
+  width: calc(25% - 16rpx);
   height: 108rpx;
+  margin: 0 8rpx 16rpx;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -379,7 +437,27 @@ page {
   background: #ffffff;
   border-radius: 16rpx;
   box-shadow: 0 2rpx 8rpx rgba(31, 36, 48, 0.06);
+  padding: 0;
+  line-height: 1;
+  color: #1f2430;
 }
 .key::after { border: none; }
 .key-fn { color: #2f9e6b; font-size: 30rpx; }
-.key-submit { background: #2f9e6b; color: #ffffff; }
+/* “提交”按钮跨两列（占 50%）；“+/−”与“.”各占 25%，最后一行为 3 键 */
+.key-submit {
+  background: #2f9e6b;
+  color: #ffffff;
+  width: calc(50% - 16rpx);
+}
+
+/* 题型按钮网格（basic 页「全部题型」，2 列，用 flex 模拟 grid） */
+.topic-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -8rpx;
+}
+.topic-btn {
+  width: calc(50% - 16rpx);
+  margin: 0 8rpx 16rpx;
+  box-sizing: border-box;
+}

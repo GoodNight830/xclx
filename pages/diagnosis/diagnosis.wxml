@@ -31,7 +31,7 @@
           <view class="list">
             <view wx:for="{{focusRanges}}" wx:key="rangeMin" class="list-item" style="align-items: flex-start">
               <view class="list-item-main">
-                <view class="row" style="gap: 12rpx">
+                <view class="row">
                   <text class="bold">除数 {{item.rangeMin}}–{{item.rangeMax}}</text>
                   <text class="badge {{item.trendBadgeClass}}">{{item.trendLabel}}</text>
                 </view>

@@ -47,7 +47,7 @@
     <view class="list" style="margin-top: 16rpx">
       <view wx:for="{{item.sessions}}" wx:for-item="session" wx:key="id" class="list-item">
         <view class="list-item-main" data-id="{{session.id}}" bindtap="toggleSession">
-          <view class="row" style="gap: 12rpx">
+          <view class="row">
             <text class="badge badge-muted">{{session.mode === 'speed' ? '竞速' : '训练'}}</text>
             <text class="mono text-sm">{{session.correctCount}}/{{session.answeredCount}}</text>
           </view>
@@ -60,7 +60,7 @@
       <view wx:if="{{expandedSessionId === session.id}}" style="padding-left: 16rpx; margin-top: 8rpx">
         <view wx:for="{{sessionRecords[session.id]}}" wx:for-item="record" wx:key="id" class="list-item">
           <view class="list-item-main">
-            <view class="row" style="gap: 8rpx">
+            <view class="row">
               <text class="text-sm">{{record.question}}</text>
               <text class="{{record.correct ? 'text-success bold' : 'text-danger bold'}}">{{record.correct ? '✓' : '✕'}}</text>
             </view>

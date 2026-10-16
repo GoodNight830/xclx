@@ -74,22 +74,15 @@ Page({
     // 饼状图
     const totalCount = modules.reduce((sum, m) => sum + m.questionCount, 0)
     let pieSegments = []
-    let acc = 0
     if (totalCount > 0) {
       pieSegments = modules.map((m, i) => {
-        const start = (acc / totalCount) * 360
-        acc += m.questionCount
-        const end = (acc / totalCount) * 360
         return {
           module: m.module,
           label: m.label,
           questionCount: m.questionCount,
           percent: (m.questionCount / totalCount) * 100,
           percentLabel: format.formatPercent((m.questionCount / totalCount) * 100),
-          color: PIE_COLORS[i % PIE_COLORS.length],
-          start,
-          end,
-          path: this.piePath(start, end, 88)
+          color: PIE_COLORS[i % PIE_COLORS.length]
         }
       })
     }
@@ -102,6 +95,9 @@ Page({
       bookmarkCount: profile.bookmarkCount,
       pieSegments,
       pieHasData: totalCount > 0
+    }, () => {
+      // setData 渲染完成后绘制饼状图
+      if (totalCount > 0) this.drawPieChart()
     })
     this.loadBookmarksOnly()
   },
@@ -114,18 +110,49 @@ Page({
     this.setData({ bookmarks })
   },
 
-  piePath(start, end, r) {
-    if (end - start >= 360) {
-      return 'M 100 ' + (100 - r) + ' A ' + r + ' ' + r + ' 0 1 1 100 ' + (100 + r) + ' A ' + r + ' ' + r + ' 0 1 1 100 ' + (100 - r) + ' Z'
-    }
-    const a = ((start - 90) * Math.PI) / 180
-    const b = ((end - 90) * Math.PI) / 180
-    const x1 = 100 + r * Math.cos(a)
-    const y1 = 100 + r * Math.sin(a)
-    const x2 = 100 + r * Math.cos(b)
-    const y2 = 100 + r * Math.sin(b)
-    const largeArc = end - start > 180 ? 1 : 0
-    return 'M 100 100 L ' + x1 + ' ' + y1 + ' A ' + r + ' ' + r + ' 0 ' + largeArc + ' 1 ' + x2 + ' ' + y2 + ' Z'
+  // 用 canvas 2d 绘制饼状图（替代不兼容的 SVG）
+  drawPieChart() {
+    if (!this.data.pieHasData || !this.data.pieSegments.length) return
+    const query = wx.createSelectorQuery()
+    query.select('#pieChart').fields({ node: true, size: true }).exec((res) => {
+      if (!res || !res[0] || !res[0].node) return
+      const canvas = res[0].node
+      const ctx = canvas.getContext('2d')
+      const dpr = wx.getSystemInfoSync().pixelRatio || 2
+      const size = res[0].width
+      canvas.width = size * dpr
+      canvas.height = size * dpr
+      ctx.scale(dpr, dpr)
+
+      const cx = size / 2
+      const cy = size / 2
+      const r = size / 2 - 4
+      const segs = this.data.pieSegments
+
+      // 背景圆
+      ctx.beginPath()
+      ctx.arc(cx, cy, r, 0, Math.PI * 2)
+      ctx.fillStyle = '#eef1f6'
+      ctx.fill()
+
+      // 各扇形
+      let acc = 0
+      const total = segs.reduce((s, m) => s + m.questionCount, 0)
+      if (total <= 0) return
+      segs.forEach((m) => {
+        const start = (acc / total) * 360
+        acc += m.questionCount
+        const end = (acc / total) * 360
+        const startRad = ((start - 90) * Math.PI) / 180
+        const endRad = ((end - 90) * Math.PI) / 180
+        ctx.beginPath()
+        ctx.moveTo(cx, cy)
+        ctx.arc(cx, cy, r, startRad, endRad)
+        ctx.closePath()
+        ctx.fillStyle = m.color
+        ctx.fill()
+      })
+    })
   },
 
   loadHistory() {

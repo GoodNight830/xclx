@@ -38,14 +38,11 @@
     <view class="section-title">模块训练分布</view>
     <view wx:if="{{!pieHasData}}" class="alert alert-info">还没有训练记录，完成一组训练后这里会显示各模块占比。</view>
     <view wx:else class="card" style="display: flex; align-items: center; flex-wrap: wrap">
-      <svg width="180" height="180" viewBox="0 0 200 200" style="flex-shrink: 0">
-        <circle cx="100" cy="100" r="88" fill="#eef1f6" />
-        <path wx:for="{{pieSegments}}" wx:key="module" d="{{item.path}}" fill="{{item.color}}" />
-      </svg>
+      <canvas type="2d" id="pieChart" class="pie-canvas" style="flex-shrink: 0"></canvas>
       <view class="list" style="flex: 1; min-width: 300rpx; margin-left: 24rpx">
         <view wx:for="{{pieSegments}}" wx:key="module" class="list-item">
           <view class="list-item-main">
-            <view class="row" style="gap: 12rpx; align-items: center">
+            <view class="row" style="align-items: center">
               <text class="pie-dot" style="background: {{item.color}}"></text>
               <text class="bold">{{item.label}}</text>
             </view>
@@ -60,14 +57,14 @@
   <view class="section">
     <view class="section-title">训练记录</view>
 
-    <view style="display: flex; gap: 16rpx; margin-bottom: 16rpx">
+    <view style="display: flex; margin-bottom: 16rpx">
       <view class="field" style="flex: 1; margin: 0">
         <view class="field-label">模块</view>
         <picker range="{{moduleOptions}}" range-key="label" value="{{moduleFilter}}" bindchange="switchModule">
           <view class="input" style="display: flex; align-items: center">{{moduleFilterLabel}}</view>
         </picker>
       </view>
-      <view class="field" style="flex: 1; margin: 0">
+      <view class="field" style="flex: 1; margin: 0 0 0 16rpx">
         <view class="field-label">日期</view>
         <picker range="{{dateOptions}}" value="{{dateFilter}}" bindchange="switchDate">
           <view class="input" style="display: flex; align-items: center">{{dateFilter ? dateFilter : '全部日期'}}</view>
@@ -116,7 +113,7 @@
       <view class="list" style="margin-top: 16rpx">
         <view wx:for="{{item.sessions}}" wx:for-item="session" wx:key="id" class="list-item">
           <view class="list-item-main" data-id="{{session.id}}" bindtap="toggleSession">
-            <view class="row" style="gap: 12rpx">
+            <view class="row">
               <text class="badge badge-muted">{{session.mode === 'speed' ? '竞速' : '训练'}}</text>
               <text class="mono text-sm">{{session.correctCount}}/{{session.answeredCount}}</text>
             </view>
@@ -128,7 +125,7 @@
         <view wx:if="{{expandedSessionId === session.id}}" style="padding-left: 16rpx; margin-top: 8rpx">
           <view wx:for="{{sessionRecords[session.id]}}" wx:for-item="record" wx:key="id" class="list-item">
             <view class="list-item-main">
-              <view class="row" style="gap: 8rpx">
+              <view class="row">
                 <text class="text-sm">{{record.question}}</text>
                 <text class="{{record.correct ? 'text-success bold' : 'text-danger bold'}}">{{record.correct ? '✓' : '✕'}}</text>
               </view>
@@ -155,7 +152,7 @@
       <view class="list">
         <view wx:for="{{bookmarks}}" wx:key="id" class="list-item" style="align-items: flex-start">
           <view class="list-item-main">
-            <view class="row" style="gap: 12rpx">
+            <view class="row">
               <text class="question-text" style="font-size: 28rpx">{{item.question}}</text>
               <text class="badge badge-muted">{{item.moduleLabel}}</text>
             </view>

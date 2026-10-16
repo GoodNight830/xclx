@@ -87,7 +87,7 @@
           <view class="list">
             <view wx:for="{{aiHistory}}" wx:key="id" class="list-item" style="align-items: flex-start">
               <view class="list-item-main">
-                <view class="row" style="gap: 12rpx; flex-wrap: wrap">
+                <view class="row" style="flex-wrap: wrap">
                   <text class="bold">{{item.createdAt}}</text>
                   <text wx:if="{{item.id === latestAi.id}}" class="badge badge-success">最新</text>
                   <text class="badge badge-muted">{{item.model}}</text>
