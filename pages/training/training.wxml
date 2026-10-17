@@ -34,25 +34,25 @@
     <button class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="continueNext">继续</button>
   </view>
 
-  <!-- 数字键盘 -->
+  <!-- 数字键盘（3 列布局：功能行 + 数字区 + 底行） -->
   <view class="keypad-wrap">
     <view class="keypad">
-      <button class="key" data-key="7" bindtap="onKeyTap">7</button>
-      <button class="key" data-key="8" bindtap="onKeyTap">8</button>
-      <button class="key" data-key="9" bindtap="onKeyTap">9</button>
-      <button class="key key-fn" data-key="del" bindtap="onKeyTap">⌫</button>
-      <button class="key" data-key="4" bindtap="onKeyTap">4</button>
-      <button class="key" data-key="5" bindtap="onKeyTap">5</button>
-      <button class="key" data-key="6" bindtap="onKeyTap">6</button>
-      <button class="key key-fn" data-key="clear" bindtap="onKeyTap">清空</button>
-      <button class="key" data-key="1" bindtap="onKeyTap">1</button>
-      <button class="key" data-key="2" bindtap="onKeyTap">2</button>
-      <button class="key" data-key="3" bindtap="onKeyTap">3</button>
-      <button class="key key-fn" data-key="restart" bindtap="restartQuestion">重开</button>
-      <button wx:if="{{allowNegative}}" class="key" data-key="neg" bindtap="onKeyTap">+/−</button>
-      <button wx:else class="key" data-key="0" bindtap="onKeyTap">0</button>
-      <button class="key" data-key="." bindtap="onKeyTap">.</button>
-      <button class="key key-submit" bindtap="submit">提交</button>
+      <view class="key key-fn" data-key="restart" hover-class="key-active" bindtap="restartQuestion">重开</view>
+      <view class="key key-fn" data-key="clear" hover-class="key-active" bindtap="onKeyTap">清空</view>
+      <view class="key key-fn" data-key="del" hover-class="key-active" bindtap="onKeyTap">退格</view>
+      <view class="key" data-key="1" hover-class="key-active" bindtap="onKeyTap">1</view>
+      <view class="key" data-key="2" hover-class="key-active" bindtap="onKeyTap">2</view>
+      <view class="key" data-key="3" hover-class="key-active" bindtap="onKeyTap">3</view>
+      <view class="key" data-key="4" hover-class="key-active" bindtap="onKeyTap">4</view>
+      <view class="key" data-key="5" hover-class="key-active" bindtap="onKeyTap">5</view>
+      <view class="key" data-key="6" hover-class="key-active" bindtap="onKeyTap">6</view>
+      <view class="key" data-key="7" hover-class="key-active" bindtap="onKeyTap">7</view>
+      <view class="key" data-key="8" hover-class="key-active" bindtap="onKeyTap">8</view>
+      <view class="key" data-key="9" hover-class="key-active" bindtap="onKeyTap">9</view>
+      <view wx:if="{{allowNegative}}" class="key" data-key="neg" hover-class="key-active" bindtap="onKeyTap">+/−</view>
+      <view wx:else class="key" data-key="0" hover-class="key-active" bindtap="onKeyTap">0</view>
+      <view class="key" data-key="." hover-class="key-active" bindtap="onKeyTap">.</view>
+      <view class="key key-submit" hover-class="key-active" bindtap="submit">确认</view>
     </view>
   </view>
 </view>
