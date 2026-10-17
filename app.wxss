@@ -469,3 +469,10 @@ page {
   margin: 0 8rpx 16rpx;
   box-sizing: border-box;
 }
+/* 已开放的题型：浅绿底 + 绿字（未上线的为灰色 disabled） */
+.topic-available {
+  background: #f4fbf7;
+  color: #2f9e6b;
+  border-color: #bfe6d2;
+  font-weight: 600;
+}

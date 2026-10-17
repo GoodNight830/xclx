@@ -16,10 +16,10 @@
       <view class="text-sm text-muted" style="margin-top: 8rpx">
         最近常用：{{recentModeLabel}} · {{settings.defaultQuestionCount}} 题 · 允许误差 {{settings.defaultAllowedErrorRate}}%
       </view>
-      <view class="btn-row" style="margin-top: 20rpx">
-        <button class="btn btn-primary" bindtap="startPractice">开始练习（{{recentModeLabel}}）</button>
-        <button class="btn btn-outline btn-sm" data-mode="training" bindtap="startPractice">训练模式</button>
-        <button class="btn btn-outline btn-sm" data-mode="speed" bindtap="startPractice">竞速模式</button>
+      <button class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="startPractice">开始练习（{{recentModeLabel}}）</button>
+      <view class="topic-grid" style="margin-top: 16rpx">
+        <button class="btn topic-btn btn-outline" data-mode="training" bindtap="startPractice">训练模式</button>
+        <button class="btn topic-btn btn-outline" data-mode="speed" bindtap="startPractice">竞速模式</button>
       </view>
     </view>
   </view>
@@ -31,13 +31,13 @@
       <button
         wx:for="{{topics}}"
         wx:key="key"
-        class="btn topic-btn {{item.available ? 'btn-primary' : 'btn-outline'}}"
+        class="btn topic-btn {{item.available ? 'btn-outline topic-available' : 'btn-outline'}}"
         disabled="{{!item.available}}"
         data-key="{{item.key}}"
         bindtap="openTopic"
       >{{item.title}}</button>
     </view>
-    <view class="field-hint" style="margin-top: 12rpx">灰色题型即将上线，当前已开放五位数 ÷ 三位数与正负运算。</view>
+    <view class="field-hint" style="margin-top: 12rpx">灰色题型即将上线，点击已开放题型直接开始训练。</view>
   </view>
 
   <!-- 今日概览 -->

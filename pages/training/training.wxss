@@ -1,8 +1,10 @@
+/* 训练页：满屏 flex 布局，键盘吸底（题目区弹性占位） */
 .training-page {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding-bottom: env(safe-area-inset-bottom);
+  min-height: 100vh;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 24rpx);
 }
 
 .training-header {
@@ -10,9 +12,12 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20rpx;
+  flex-shrink: 0;
 }
 
+/* 题目区：flex:1 弹性占据键盘上方空间，内容垂直居中 */
 .question-area {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -40,6 +45,7 @@
   margin-bottom: 20rpx;
   color: #1f2430;
   word-break: break-all;
+  flex-shrink: 0;
 }
 .answer-display .placeholder {
   color: #c0c6d2;
@@ -51,8 +57,11 @@
 
 .feedback-area {
   margin-bottom: 20rpx;
+  flex-shrink: 0;
 }
 
+/* 键盘吸底：margin-top:auto 把键盘推到页面底部 */
 .keypad-wrap {
-  margin-top: 16rpx;
+  margin-top: auto;
+  flex-shrink: 0;
 }
