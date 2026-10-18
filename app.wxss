@@ -89,23 +89,19 @@ page {
 }
 .btn::after { border: none; }
 
-/* ============ 点击反馈 ============ */
-/* 微信 <button> 的默认 hover-class 名称固定为 "button-hover"，
- * 只要在 app.wxss 里定义这个类，全项目按钮自动获得按压效果，无需逐个改 wxml。
- * 加 !important 是为了覆盖微信内置基础样式。 */
+/* ============ 点击反馈 ============
+ * 总原则：按压态必须与被按元素的形状一致，否则会露出突兀的直角方块。
+ *
+ * 1) 形状无关的反馈优先用「透明度淡化」（opacity），因为它不会改变盒子形状，
+ *    适合按钮、有底色的元素、不便预测形状的元素。
+ * 2) 需要换成浅绿底色的，必须同时声明与元素一致的圆角。
+ * 3) 卡片内的「通栏行」（list-item/collapse-header）还要用负 margin + 等量 padding
+ *    把高亮块向左右各外扩一点，让它像一条浮起来的圆角条，而不是紧贴卡片边缘的矩形。
+ *
+ * 微信 <button> 的默认 hover-class 名称固定为 "button-hover"，
+ * 只要在 app.wxss 里定义这个类，全项目按钮自动获得按压效果，无需逐个改 wxml。 */
 .button-hover {
-  opacity: 0.65 !important;
-}
-
-/* 可点击 view 的按压态（wxml 上加 hover-class="press-light"）。
- * view 的 hover-stay-time 默认 400ms，无需额外参数。 */
-.press-light {
-  background: #e6efea !important;
-}
-
-/* 可点击 view 的备用按压态：只降透明度，适合本身带底色的元素 */
-.press-fade {
-  opacity: 0.65;
+  opacity: 0.72 !important;
 }
 
 .btn-primary { background: #2f9e6b; color: #ffffff; }
@@ -360,8 +356,10 @@ page {
   color: #1f2430;
   line-height: 1;
 }
+/* 键盘按压：只淡化，不改底色。
+ * 原来统一换成浅绿，会让绿色「确认」键在按压时反过来变亮，观感是反的。 */
 .key-active {
-  background: #e3efe8;
+  opacity: 0.7;
   box-shadow: none;
 }
 .key-fn {
@@ -426,3 +424,52 @@ page {
   transform: rotate(225deg);
 }
 .collapse-content { margin-top: 16rpx; }
+
+/* ==================================================================
+ * 统一按压态（放在文件末尾，确保能覆盖上方通栏行的 padding / background）
+ * 用法：wxml 上按元素形状选一个 hover-class
+ *   press-row  → 卡片内的通栏行（list-item / collapse-header / st-row）
+ *   press-card → 圆角 20rpx 的卡片（category-card 等）
+ *   press-box  → 带边框的输入框 / 选择器（.input）
+ *   press-fade → 本身已有底色的元素（主按钮、已选中项目），只淡化不动颜色
+ *   tab-hover  → 分段控件
+ * ================================================================== */
+
+/* 1) 通栏行：负 margin 向左右各外扩 16rpx，再用等量 padding 把内容推回原位。
+ *    负 margin 外扩量小于 .card 的内边距（28rpx），所以不会顶破卡片圆角；
+ *    结果是高亮块比文字宽一圈、四角带弧，而文字位置纹丝不动。 */
+.press-row {
+  /* 覆盖 .collapse-header 的 width:100%，否则负 margin 只会把整行左移、而不是把它撑宽 */
+  width: auto !important;
+  background: #eaf3ee !important;
+  border-radius: 14rpx !important;
+  margin-left: -16rpx !important;
+  margin-right: -16rpx !important;
+  padding-left: 16rpx !important;
+  padding-right: 16rpx !important;
+  /* 行的下分隔线会随负 margin 一起变宽、冒出到圆角之外，按压时隐掉 */
+  border-bottom-color: transparent !important;
+}
+
+/* 2) 圆角卡片：与 .card / .category-card 的 20rpx 保持一致 */
+.press-card {
+  background: #eaf3ee !important;
+  border-radius: 20rpx !important;
+}
+
+/* 3) 输入框 / 下拉触发器：与 .input 的 16rpx 圆角一致，边框同步变绿 */
+.press-box {
+  background: #f3f8f5 !important;
+  border-color: #9fd8b8 !important;
+  border-radius: 16rpx !important;
+}
+
+/* 4) 已有底色的元素：不动颜色，只整体淡化，天然与形状无关 */
+.press-fade {
+  opacity: 0.72;
+}
+
+/* 5) 分段控件（tab）按压态 */
+.tab-hover {
+  opacity: 0.75;
+}

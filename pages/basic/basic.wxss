@@ -34,8 +34,9 @@
   border: 2rpx solid #bfe6d2;
 }
 
-.mod-act-primary-hover { opacity: 0.7; }
-.mod-act-outline-hover { background: #eef3f0; }
+/* 按压态：按钮自带 14rpx 圆角，这里只换底色 / 淡化 */
+.mod-act-primary-hover { opacity: 0.72; }
+.mod-act-outline-hover { background: #eaf3ee; }
 
 /* 「即将上线」的灰色标签（复用 .topic-grid 的负 margin 布局） */
 .topic-soon {

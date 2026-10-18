@@ -70,28 +70,28 @@
     <view class="section-title">训练工具</view>
     <view class="card">
       <view class="list">
-        <view class="list-item" data-page="wrong" bindtap="goTo" hover-class="press-light">
+        <view class="list-item" data-page="wrong" bindtap="goTo" hover-class="press-row">
           <view class="list-item-main">
             <view class="bold">📕 错题本</view>
             <view class="text-sm text-muted">未掌握 {{unmasteredWrongCount}} 题</view>
           </view>
           <text class="text-muted">›</text>
         </view>
-        <view class="list-item" data-page="profile" bindtap="goTo" hover-class="press-light">
+        <view class="list-item" data-page="profile" bindtap="goTo" hover-class="press-row">
           <view class="list-item-main">
             <view class="bold">📈 训练记录</view>
             <view class="text-sm text-muted">历史统计与每日趋势</view>
           </view>
           <text class="text-muted">›</text>
         </view>
-        <view class="list-item" data-page="weak" bindtap="goTo" hover-class="press-light">
+        <view class="list-item" data-page="weak" bindtap="goTo" hover-class="press-row">
           <view class="list-item-main">
             <view class="bold">🎯 薄弱点</view>
             <view class="text-sm text-muted">个人薄弱除数范围</view>
           </view>
           <text class="text-muted">›</text>
         </view>
-        <view class="list-item" data-page="diagnosis" bindtap="goTo" hover-class="press-light">
+        <view class="list-item" data-page="diagnosis" bindtap="goTo" hover-class="press-row">
           <view class="list-item-main">
             <view class="bold">◉ 能力诊断</view>
             <view class="text-sm text-muted">长期基线、近期变化与 AI 诊断入口</view>

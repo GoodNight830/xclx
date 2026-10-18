@@ -61,8 +61,16 @@
 .st-row-noborder {
   border-bottom: none;
 }
+/* 行式按压态：跟随 .press-row 的规范（左右各外扩 16rpx + 14rpx 圆角），
+ * 这里必须写在页面样式里才能覆盖 .st-row 的 padding / border。 */
 .st-row-hover {
-  background: #eef3f0;
+  background: #eaf3ee;
+  border-radius: 14rpx;
+  margin-left: -16rpx;
+  margin-right: -16rpx;
+  padding-left: 16rpx;
+  padding-right: 16rpx;
+  border-bottom-color: transparent;
 }
 .st-row-label {
   font-size: 28rpx;
@@ -211,8 +219,9 @@
   color: #ef4444;
 }
 
-.st-act-primary-hover { opacity: 0.7; }
-.st-act-outline-hover { background: #eef3f0; }
+/* 带圆角的按钮：形状由 .st-act 提供已是 16rpx，这里只换底色 / 淡化 */
+.st-act-primary-hover { opacity: 0.72; }
+.st-act-outline-hover { background: #eaf3ee; }
 .st-act-danger-hover { background: #fbdcdc; }
 
 .st-act-foot {

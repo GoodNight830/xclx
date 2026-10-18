@@ -47,7 +47,7 @@
       <block wx:if="{{latestAi}}">
         <view class="bold" style="margin-top: 20rpx">{{latestAi.report.summary}}</view>
 
-        <view class="collapse-header" style="margin-top: 16rpx" bindtap="toggleDetail" hover-class="press-light">
+        <view class="collapse-header" style="margin-top: 16rpx" bindtap="toggleDetail" hover-class="press-row">
           <view class="collapse-meta">{{aiDetailExpanded ? '收起详情' : '查看详情'}}</view>
           <text class="collapse-chevron {{aiDetailExpanded ? 'open' : ''}}"></text>
         </view>
@@ -90,7 +90,7 @@
 
     <!-- 历史报告 -->
     <view wx:if="{{aiHistory.length}}" class="section">
-        <view class="collapse-header" bindtap="toggleHistory" hover-class="press-light">
+        <view class="collapse-header" bindtap="toggleHistory" hover-class="press-row">
           <view class="collapse-title">历史诊断报告</view>
         <view class="collapse-meta">{{aiHistory.length}} 份 <text class="collapse-chevron {{historyExpanded ? 'open' : ''}}"></text></view>
       </view>
