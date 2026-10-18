@@ -1,29 +1,29 @@
 /**
- * 全局样式（迁移自 Web 版 main.css，精简为小程序 WXSS 语法）。
- * 移动优先，主色 #2f9e6b（绿色），配合浅色背景。
+ * 全局样式 —— 微信小程序规范重写版
  *
- * 小程序兼容性说明（重要）：
- * - 不使用 CSS Grid（display:grid / grid-template-columns），
- *   因为低版本基础库 / 低端 Android 内核不支持，会崩成单列。
- *   统一改用 flex + flex-wrap + 百分比宽度模拟网格。
- * - 不使用 flex 的 gap 属性（部分基础库不支持），改用 margin 控制间距。
- * - 所有 button 统一重置默认 margin/padding/line-height，避免尺寸溢出。
+ * 设计原则（针对小程序原生组件的特性）：
+ * 1. 布局优先用 flex（view 上），但 button/text/input 等原生组件不依赖 flex 对齐。
+ * 2. 按钮统一：display:block + line-height 垂直居中 + text-align:center。
+ * 3. 网格一律 flex + flex-wrap + 百分比宽度（小程序不支持 CSS Grid / flex gap）。
+ * 4. 文字用 view 包裹，避免 text 内嵌 flex。
+ * 主色 #2f9e6b，浅色背景 #f5f7f6。
  */
 
 page {
-  background: #f2f6f2;
+  background: #f5f7f6;
   color: #1f2430;
   font-size: 28rpx;
   line-height: 1.6;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", sans-serif;
 }
 
 .page {
   padding: 24rpx;
-  padding-bottom: 60rpx;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
 }
 
-/* 页面标题 */
+/* ============ 页头 ============ */
 .page-header {
   display: flex;
   align-items: center;
@@ -33,49 +33,43 @@ page {
 .page-title {
   font-size: 40rpx;
   font-weight: 700;
-  margin: 0;
+  line-height: 1.3;
 }
 .page-subtitle {
-  font-size: 26rpx;
+  font-size: 24rpx;
   color: #8a93a6;
-  margin: 8rpx 0 0;
+  margin-top: 6rpx;
 }
 
-/* 区块 */
+/* ============ 区块 / 卡片 ============ */
 .section {
   margin-bottom: 28rpx;
 }
 .section-title {
   font-size: 30rpx;
   font-weight: 700;
-  margin: 0 0 16rpx;
+  margin-bottom: 16rpx;
 }
-
-/* 卡片 */
 .card {
   background: #ffffff;
   border-radius: 20rpx;
   padding: 28rpx;
-  box-shadow: 0 2rpx 12rpx rgba(31, 36, 48, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(31, 36, 48, 0.05);
 }
 .card-title {
   font-size: 30rpx;
   font-weight: 700;
-  margin: 0;
 }
 .card-subtitle {
   font-size: 24rpx;
   color: #8a93a6;
-  margin: 8rpx 0 0;
+  margin-top: 8rpx;
 }
 
-/* 按钮（统一重置小程序 button 默认样式）
- * 关键：button 是原生组件，不能 display:flex。
- * 用 display:inline-block + line-height 垂直居中，宽度自适应内容；
- * 需要全宽时配合 .btn-block。
- */
+/* ============ 按钮（原生 button，规范写法） ============ */
 .btn {
-  display: inline-block;
+  display: block;
+  box-sizing: border-box;
   margin: 0;
   padding: 0 32rpx;
   height: 88rpx;
@@ -84,53 +78,40 @@ page {
   border-radius: 16rpx;
   font-size: 28rpx;
   font-weight: 600;
-  border: 2rpx solid transparent;
-  box-sizing: border-box;
   background-color: transparent;
   overflow: hidden;
   white-space: nowrap;
+  border: none;
 }
 .btn::after { border: none; }
-.btn-primary {
-  background: #2f9e6b;
-  color: #ffffff;
+
+.btn-primary { background: #2f9e6b; color: #ffffff; }
+.btn-secondary { background: #eaf7f0; color: #2f9e6b; }
+.btn-outline { background: #ffffff; color: #2f9e6b; border: 2rpx solid #bfe6d2; }
+.btn-ghost { background: transparent; color: #8a93a6; }
+.btn-danger { background: #fdecec; color: #ef4444; }
+
+.btn-block { width: 100%; }
+.btn-lg { height: 96rpx; line-height: 96rpx; font-size: 30rpx; }
+.btn-sm { height: 64rpx; line-height: 64rpx; font-size: 24rpx; padding: 0 24rpx; }
+
+.btn[disabled] { opacity: 0.4; }
+
+/* 按钮横排容器：不依赖 flex gap，用负 margin + 子项 margin */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-right: -16rpx;
+  margin-bottom: -16rpx;
 }
-.btn-secondary {
-  background: #eaf7f0;
-  color: #2f9e6b;
-}
-.btn-outline {
-  background: #ffffff;
-  color: #2f9e6b;
-  border-color: #bfe6d2;
-}
-.btn-ghost {
-  background: transparent;
-  color: #8a93a6;
-}
-.btn-danger {
-  background: #fdecec;
-  color: #ef4444;
-}
-.btn-block {
-  width: 100%;
-}
-.btn-lg {
-  height: 96rpx;
-  line-height: 96rpx;
-  font-size: 30rpx;
-}
-.btn-sm {
-  height: 64rpx;
-  line-height: 64rpx;
-  font-size: 24rpx;
-  padding: 0 24rpx;
-}
-.btn[disabled] {
-  opacity: 0.5;
+.btn-row > .btn,
+.btn-row > button {
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
 }
 
-/* 行布局 */
+/* ============ 通用行布局 ============ */
 .row-between {
   display: flex;
   align-items: center;
@@ -139,52 +120,17 @@ page {
 .row {
   display: flex;
   align-items: center;
-}
-/* 行内元素间距（替代 flex gap，兼容不支持 gap 的基础库） */
-.row > view + view,
-.row > button + button,
-.row > text + text,
-.row > view + button,
-.row > button + view,
-.row > view + text,
-.row > text + view,
-.row > button + text,
-.row > text + button {
-  margin-left: 12rpx;
-}
-/* 允许换行的行布局，用于徽章/标签组 */
-.row-wrap {
-  display: flex;
   flex-wrap: wrap;
-  align-items: center;
 }
-.row-wrap > view,
-.row-wrap > button,
-.row-wrap > text {
+.row > view,
+.row > text,
+.row > button {
   margin-right: 12rpx;
-  margin-bottom: 12rpx;
+  margin-bottom: 6rpx;
 }
-.row-wrap > view:last-child,
-.row-wrap > button:last-child,
-.row-wrap > text:last-child {
-  margin-right: 0;
-}
-.btn-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.btn-row > button,
-.btn-row > view {
-  margin-right: 16rpx;
-  margin-bottom: 16rpx;
-}
-.btn-row > button:last-child,
-.btn-row > view:last-child {
-  margin-right: 0;
-}
+.row > :last-child { margin-right: 0; }
 
-/* 文本工具 */
+/* ============ 文本工具 ============ */
 .bold { font-weight: 700; }
 .text-sm { font-size: 26rpx; }
 .text-xs { font-size: 22rpx; }
@@ -195,11 +141,8 @@ page {
 .text-center { text-align: center; }
 .mono { font-family: "SF Mono", "Consolas", monospace; }
 
-/* 列表 */
-.list {
-  display: flex;
-  flex-direction: column;
-}
+/* ============ 列表 ============ */
+.list { }
 .list-item {
   display: flex;
   align-items: center;
@@ -209,23 +152,23 @@ page {
 }
 .list-item:last-child { border-bottom: none; }
 .list-item-main {
-  display: flex;
-  flex-direction: column;
   flex: 1;
   min-width: 0;
 }
-.list-item-main > view + view {
-  margin-top: 6rpx;
+.list-item-main > view,
+.list-item-main > text {
+  margin-bottom: 6rpx;
 }
+.list-item-main > :last-child { margin-bottom: 0; }
 .list-item-meta {
   font-size: 24rpx;
   color: #8a93a6;
 }
 
-/* 徽章 */
+/* ============ 徽章 ============ */
 .badge {
   display: inline-block;
-  padding: 4rpx 16rpx;
+  padding: 2rpx 16rpx;
   border-radius: 999rpx;
   font-size: 22rpx;
   font-weight: 600;
@@ -238,27 +181,18 @@ page {
 .badge-danger { background: #fdecec; color: #ef4444; }
 .badge-muted { background: #eef1f6; color: #8a93a6; }
 
-/* 提示 */
+/* ============ 提示 ============ */
 .alert {
   padding: 20rpx 24rpx;
   border-radius: 16rpx;
   font-size: 26rpx;
 }
-.alert-info {
-  background: #eef4ff;
-  color: #4f7cff;
-}
-.alert-danger {
-  background: #fdecec;
-  color: #ef4444;
-}
-.alert-success {
-  background: #eaf7f0;
-  color: #2f9e6b;
-}
+.alert-info { background: #eef4ff; color: #4f7cff; }
+.alert-danger { background: #fdecec; color: #ef4444; }
+.alert-success { background: #eaf7f0; color: #2f9e6b; }
 
-/* 表单 */
-.field { margin-bottom: 20rpx; }
+/* ============ 表单 ============ */
+.field { margin-bottom: 24rpx; }
 .field-label {
   display: block;
   font-size: 26rpx;
@@ -269,9 +203,10 @@ page {
 .field-hint {
   font-size: 22rpx;
   color: #8a93a6;
-  margin: 8rpx 0 0;
+  margin-top: 8rpx;
 }
 .input {
+  box-sizing: border-box;
   width: 100%;
   height: 88rpx;
   line-height: 88rpx;
@@ -280,10 +215,9 @@ page {
   border: 2rpx solid #e6e9f0;
   background: #ffffff;
   font-size: 28rpx;
-  box-sizing: border-box;
 }
 
-/* 分段控件（tab） */
+/* ============ 分段控件（tab） ============ */
 .tabs {
   display: flex;
   background: #eef1f6;
@@ -312,16 +246,18 @@ page {
   box-shadow: 0 2rpx 8rpx rgba(31, 36, 48, 0.06);
 }
 
-/* 统计卡网格（2 列，用 flex 模拟 grid，兼容所有机型） */
+/* ============ 2 列网格（flex 模拟 grid） ============ */
 .stat-grid {
   display: flex;
   flex-wrap: wrap;
-  margin: 0 -8rpx;
+  margin-right: -16rpx;
+  margin-bottom: -16rpx;
 }
 .stat {
-  width: calc(50% - 16rpx);
-  margin: 0 8rpx 16rpx;
   box-sizing: border-box;
+  width: calc(50% - 16rpx);
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
   background: #f8faf8;
   border-radius: 16rpx;
   padding: 20rpx;
@@ -338,68 +274,28 @@ page {
 }
 .stat-value-sm { font-size: 30rpx; }
 
-/* 分隔线 */
-.divider {
-  height: 2rpx;
-  background: #f0f2f7;
-  margin: 20rpx 0;
-}
-
-/* 空状态 */
-.empty {
-  padding: 60rpx 24rpx;
-  text-align: center;
-  color: #8a93a6;
-  font-size: 26rpx;
-}
-
-/* 折叠面板 */
-.collapse-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  background: transparent;
-  padding: 0;
-  border: none;
-}
-.collapse-header::after { border: none; }
-.collapse-title { font-size: 30rpx; font-weight: 700; }
-.collapse-meta { font-size: 24rpx; color: #8a93a6; display: flex; align-items: center; }
-.collapse-chevron {
-  display: inline-block;
-  width: 16rpx;
-  height: 16rpx;
-  border-right: 3rpx solid #8a93a6;
-  border-bottom: 3rpx solid #8a93a6;
-  transform: rotate(45deg);
-  transition: transform 0.2s;
-  margin-left: 8rpx;
-}
-.collapse-chevron.open {
-  transform: rotate(225deg);
-}
-.collapse-content { margin-top: 16rpx; }
-
-/* 分类卡片（首页，2 列，用 flex 模拟 grid） */
+/* ============ 分类卡片（首页 2 列） ============ */
 .category-grid {
   display: flex;
   flex-wrap: wrap;
-  margin: 0 -10rpx;
+  margin-right: -20rpx;
+  margin-bottom: -20rpx;
 }
 .category-card {
-  width: calc(50% - 20rpx);
-  margin: 0 10rpx 20rpx;
   box-sizing: border-box;
+  width: calc(50% - 20rpx);
+  margin-right: 20rpx;
+  margin-bottom: 20rpx;
   background: #ffffff;
   border-radius: 20rpx;
   padding: 28rpx;
-  box-shadow: 0 2rpx 12rpx rgba(31, 36, 48, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(31, 36, 48, 0.05);
 }
 .category-card-disabled { opacity: 0.5; }
 .category-icon {
   font-size: 52rpx;
   margin-bottom: 12rpx;
+  line-height: 1;
 }
 .category-title {
   font-size: 30rpx;
@@ -411,33 +307,38 @@ page {
   margin-top: 6rpx;
 }
 
-/* 饼状图圆点 */
-.pie-dot {
-  display: inline-block;
-  width: 20rpx;
-  height: 20rpx;
-  border-radius: 50%;
-  flex-shrink: 0;
+/* ============ 题型按钮网格（basic 页） ============ */
+.topic-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -16rpx;
+  margin-bottom: -16rpx;
+}
+.topic-btn {
+  box-sizing: border-box;
+  width: calc(50% - 16rpx);
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
+}
+.topic-available {
+  background: #f4fbf7;
+  color: #2f9e6b;
+  border: 2rpx solid #bfe6d2;
 }
 
-/* 题目大字 */
-.question-text {
-  font-size: 34rpx;
-  font-weight: 700;
-  word-break: break-all;
-}
-
-/* 数字键盘（3 列布局：功能行 / 数字 1-9 / 底行 0·.·确认，用 flex 模拟 grid） */
+/* ============ 数字键盘（3 列） ============ */
 .keypad {
   display: flex;
   flex-wrap: wrap;
-  margin: 0 -8rpx;
+  margin-right: -16rpx;
+  margin-bottom: -16rpx;
 }
 .key {
+  box-sizing: border-box;
   width: calc(33.333% - 16rpx);
   height: 108rpx;
-  margin: 0 8rpx 16rpx;
-  box-sizing: border-box;
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -445,13 +346,10 @@ page {
   font-weight: 600;
   background: #ffffff;
   border-radius: 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(31, 36, 48, 0.06);
-  padding: 0;
-  line-height: 1;
+  box-shadow: 0 4rpx 12rpx rgba(31, 36, 48, 0.06);
   color: #1f2430;
-  overflow: hidden;
+  line-height: 1;
 }
-/* 按键按下效果（view 的 hover-class） */
 .key-active {
   background: #e3efe8;
   box-shadow: none;
@@ -461,27 +359,60 @@ page {
   font-size: 30rpx;
   background: #eaf7f0;
 }
-/* 确认键与普通键同宽（1/3），仅配色不同 */
 .key-submit {
   background: #2f9e6b;
   color: #ffffff;
 }
 
-/* 题型按钮网格（basic 页「全部题型」，2 列，用 flex 模拟 grid） */
-.topic-grid {
+/* ============ 其他 ============ */
+.divider {
+  height: 2rpx;
+  background: #f0f2f7;
+  margin: 20rpx 0;
+}
+.empty {
+  padding: 60rpx 24rpx;
+  text-align: center;
+  color: #8a93a6;
+  font-size: 26rpx;
+}
+.pie-dot {
+  display: inline-block;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.question-text {
+  font-size: 34rpx;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+/* 折叠面板 */
+.collapse-header {
   display: flex;
-  flex-wrap: wrap;
-  margin: 0 -8rpx;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
-.topic-btn {
-  width: calc(50% - 16rpx);
-  margin: 0 8rpx 16rpx;
-  box-sizing: border-box;
+.collapse-title { font-size: 30rpx; font-weight: 700; }
+.collapse-meta {
+  font-size: 24rpx;
+  color: #8a93a6;
+  display: flex;
+  align-items: center;
 }
-/* 已开放的题型：浅绿底 + 绿字（未上线的为灰色 disabled） */
-.topic-available {
-  background: #f4fbf7;
-  color: #2f9e6b;
-  border-color: #bfe6d2;
-  font-weight: 600;
+.collapse-chevron {
+  display: inline-block;
+  width: 16rpx;
+  height: 16rpx;
+  border-right: 3rpx solid #8a93a6;
+  border-bottom: 3rpx solid #8a93a6;
+  transform: rotate(45deg);
+  margin-left: 8rpx;
 }
+.collapse-chevron.open {
+  transform: rotate(225deg);
+}
+.collapse-content { margin-top: 16rpx; }

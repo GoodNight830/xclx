@@ -28,14 +28,14 @@ Page({
     }
     const records = storage.questionsRepo.listQuestionsBySession(sessionId)
 
-    const gradeClassMap = { excellent: 'badge-success', good: 'badge-success', pass: 'badge-warning', encourage: 'badge-muted' }
+    const gradeClassMap = { excellent: 'grade-excellent', good: 'grade-good', pass: 'grade-pass', encourage: 'grade-encourage' }
 
     this.setData({
       session,
       records,
       gradeLabel: gradeLabel(session.grade),
       gradeDescription: gradeDescription(session.grade),
-      gradeClass: gradeClassMap[session.grade] || 'badge-muted',
+      gradeClass: gradeClassMap[session.grade] || 'grade-encourage',
       accuracy: session.answeredCount > 0 ? format.formatPercent((session.correctCount / session.answeredCount) * 100) : '—',
       totalElapsedLabel: format.formatDuration(session.totalElapsedMs),
       avgElapsedLabel: session.answeredCount > 0 ? format.formatMs(session.totalElapsedMs / session.answeredCount) : '—'

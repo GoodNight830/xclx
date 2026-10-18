@@ -10,7 +10,7 @@
   <view class="section">
     <view class="field-label">分析模块</view>
     <picker range="{{moduleOptions}}" range-key="title" value="{{selectedModule}}" bindchange="switchModule">
-      <view class="input" style="display: flex; align-items: center">{{selectedModuleTitle}}</view>
+      <view class="input">{{selectedModuleTitle}}</view>
     </picker>
     <view class="field-hint">仅发送该模块的聚合统计数据，不发送逐题答案。</view>
   </view>
