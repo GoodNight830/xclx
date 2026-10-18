@@ -144,7 +144,7 @@ function wxRequest(options) {
       method: options.method || 'POST',
       data: options.data,
       header: options.header,
-      timeout: options.timeout || 90000,
+      timeout: options.timeout || 60000,
       success(res) {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data)
@@ -160,7 +160,12 @@ function wxRequest(options) {
         }
       },
       fail(err) {
-        reject(new Error('无法连接接口：' + (err.errMsg || '网络错误')))
+        const msg = (err && err.errMsg) || ''
+        if (msg.indexOf('timeout') !== -1) {
+          reject(new Error('连接超时，请检查网络或接口地址是否正确'))
+        } else {
+          reject(new Error('无法连接接口：' + (msg || '网络错误')))
+        }
       }
     })
   })
@@ -323,7 +328,7 @@ async function requestAiReport(settings, diagnosis) {
     }
 
     try {
-      const body = await performJsonRequest(settings, requestBody, 90000)
+      const body = await performJsonRequest(settings, requestBody, 60000)
       const content = body.choices && body.choices[0] && body.choices[0].message ? body.choices[0].message.content : null
       if (!content) {
         lastError = new Error('AI 服务没有返回报告内容')
@@ -356,7 +361,7 @@ async function testAiConnection(settings) {
     messages: [{ role: 'user', content: '只回复 OK' }],
     ...(deepSeek ? { stream: false } : {})
   }
-  await performJsonRequest(settings, body, 45000)
+  await performJsonRequest(settings, body, 20000)
 }
 
 module.exports = { PROMPT_VERSION, formatAiReportText, requestAiReport, testAiConnection, validateAiReport }
