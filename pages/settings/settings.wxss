@@ -1,1 +1,220 @@
-/* 设置页样式 */
+/* 设置页样式 —— 独立重写版
+ *
+ * 设计原则：
+ * 1. 完全不依赖 app.wxss 的 .btn / .card / .field 规则，避免被原生组件默认样式干扰。
+ * 2. 不使用 CSS Grid、不使用 flex gap、不使用结构性伪类（小程序不支持）。
+ * 3. 网格一律 flex + flex-wrap + 百分比宽度 + 负 margin。
+ * 4. 可点击区域全部由 <view> 承担（微信 <button> 自带 margin:auto 等基础样式，易错位）。
+ */
+
+.st-page {
+  box-sizing: border-box;
+  padding: 24rpx 24rpx 60rpx;
+}
+
+/* ---------- 页头 ---------- */
+.st-head {
+  padding: 8rpx 0 28rpx;
+}
+.st-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #1f2430;
+}
+.st-sub {
+  font-size: 24rpx;
+  color: #8a93a6;
+  margin-top: 6rpx;
+}
+
+/* ---------- 区块 / 卡片 ---------- */
+.st-sec {
+  margin-bottom: 32rpx;
+}
+.st-sec-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #4a5264;
+  margin-bottom: 16rpx;
+  padding-left: 8rpx;
+}
+.st-card {
+  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 0 28rpx;
+  box-shadow: 0 4rpx 16rpx rgba(31, 36, 48, 0.05);
+  overflow: hidden;
+}
+
+/* ---------- 通用行 ---------- */
+.st-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 22rpx 0;
+  border-bottom: 2rpx solid #f0f2f7;
+}
+.st-row-noborder {
+  border-bottom: none;
+}
+.st-row-hover {
+  background: #eef3f0;
+}
+.st-row-label {
+  font-size: 28rpx;
+  color: #1f2430;
+  line-height: 1.5;
+}
+.st-row-sub {
+  font-size: 22rpx;
+  color: #8a93a6;
+  margin-top: 4rpx;
+  line-height: 1.5;
+}
+.st-row-value {
+  font-size: 28rpx;
+  color: #2f9e6b;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 20rpx;
+}
+/* 右箭头 */
+.st-arrow {
+  display: inline-block;
+  width: 14rpx;
+  height: 14rpx;
+  border-right: 3rpx solid #b6bcc9;
+  border-bottom: 3rpx solid #b6bcc9;
+  transform: rotate(-45deg);
+  margin-left: 12rpx;
+}
+
+/* ---------- 滑块行 ---------- */
+.st-slider-row {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 24rpx 0 12rpx;
+  border-bottom: 2rpx solid #f0f2f7;
+}
+.st-slider-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4rpx;
+}
+.st-slider-num {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #2f9e6b;
+}
+
+/* ---------- 表单项 ---------- */
+.st-field {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 22rpx 0;
+  border-bottom: 2rpx solid #f0f2f7;
+}
+.st-field-label {
+  font-size: 26rpx;
+  color: #4a5264;
+  font-weight: 600;
+  margin-bottom: 14rpx;
+}
+.st-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  padding: 0 24rpx;
+  border-radius: 14rpx;
+  border: 2rpx solid #e6e9f0;
+  background: #fbfcfb;
+  font-size: 28rpx;
+  color: #1f2430;
+}
+.st-placeholder {
+  color: #b6bcc9;
+  font-size: 28rpx;
+}
+
+/* ---------- 说明文字 ---------- */
+.st-hint {
+  font-size: 22rpx;
+  color: #8a93a6;
+  line-height: 1.6;
+  padding: 22rpx 0;
+  border-bottom: 2rpx solid #f0f2f7;
+}
+.st-footnote {
+  font-size: 22rpx;
+  color: #8a93a6;
+  text-align: center;
+  margin-top: 20rpx;
+}
+
+/* ---------- 数据统计（4 列） ---------- */
+.st-count-box {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -16rpx;
+  padding: 28rpx 0 8rpx;
+  border-bottom: 2rpx solid #f0f2f7;
+}
+.st-count {
+  box-sizing: border-box;
+  width: calc(25% - 16rpx);
+  margin-right: 16rpx;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+.st-count-num {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #1f2430;
+  line-height: 1.3;
+}
+.st-count-label {
+  font-size: 22rpx;
+  color: #8a93a6;
+  margin-top: 4rpx;
+}
+
+/* ---------- 操作区（view 实现，规避原生 button 默认样式） ---------- */
+.st-act {
+  box-sizing: border-box;
+  width: 100%;
+  height: 96rpx;
+  line-height: 96rpx;
+  text-align: center;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-top: 20rpx;
+}
+.st-act-primary {
+  background: #2f9e6b;
+  color: #ffffff;
+}
+.st-act-outline {
+  background: #ffffff;
+  color: #2f9e6b;
+  border: 2rpx solid #bfe6d2;
+}
+.st-act-danger {
+  background: #fdecec;
+  color: #ef4444;
+}
+
+.st-act-primary-hover { opacity: 0.7; }
+.st-act-outline-hover { background: #eef3f0; }
+.st-act-danger-hover { background: #fbdcdc; }
+
+.st-act-foot {
+  margin-top: 40rpx;
+}

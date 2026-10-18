@@ -2,7 +2,7 @@
   <view class="page-header">
     <view>
       <view class="page-title">基础计算</view>
-      <view class="page-subtitle">选择题型进入训练，或一键快速开始</view>
+      <view class="page-subtitle">先选好模式，再点题型即可直接开始</view>
     </view>
   </view>
 
@@ -25,18 +25,6 @@
         >竞速模式</button>
       </view>
       <view class="field-hint">{{modeDescription}}</view>
-    </view>
-  </view>
-
-  <!-- 快速开始 -->
-  <view class="section">
-    <view class="section-title">快速开始</view>
-    <view class="card">
-      <view class="card-title">五位数 ÷ 三位数</view>
-      <view class="text-sm text-muted" style="margin-top: 8rpx">
-        当前模式：{{modeLabel}} · {{settings.defaultQuestionCount}} 题 · 允许误差 {{settings.defaultAllowedErrorRate}}%
-      </view>
-      <button class="btn btn-primary btn-block btn-lg" style="margin-top: 20rpx" bindtap="startPractice">开始训练（{{modeLabel}}）</button>
     </view>
   </view>
 

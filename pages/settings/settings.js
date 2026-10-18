@@ -12,6 +12,9 @@ Page({
     settings: null,
     dataCounts: null,
     // 表单状态
+    modeOptions: ['练习模式', '竞速模式'],
+    modeIndex: 0,
+    modeLabel: '练习模式',
     defaultMode: 'training',
     questionCount: 10,
     allowedErrorRate: 3,
@@ -35,9 +38,12 @@ Page({
 
   load() {
     const settings = storage.settingsRepo.getSettings()
+    const isSpeed = settings.defaultMode === 'speed'
     this.setData({
       settings,
-      defaultMode: settings.defaultMode,
+      modeIndex: isSpeed ? 1 : 0,
+      modeLabel: isSpeed ? '竞速模式' : '练习模式',
+      defaultMode: isSpeed ? 'speed' : 'training',
       questionCount: settings.defaultQuestionCount,
       allowedErrorRate: settings.defaultAllowedErrorRate,
       aiEnabled: settings.ai.enabled,
@@ -59,7 +65,15 @@ Page({
 
   // 训练参数
   onModeChange(e) {
-    this.setData({ defaultMode: e.detail.value })
+    // picker 返回的是下标，必须转回字符串，否则存进去的 0/1 会让其它页面的
+    // 「defaultMode === 'speed'」判断永远为假，导致切换竞速模式不生效。
+    const index = Number(e.detail.value)
+    const isSpeed = index === 1
+    this.setData({
+      modeIndex: index,
+      modeLabel: isSpeed ? '竞速模式' : '练习模式',
+      defaultMode: isSpeed ? 'speed' : 'training'
+    })
   },
   onQuestionCountChange(e) {
     this.setData({ questionCount: Number(e.detail.value) })
@@ -127,6 +141,7 @@ Page({
   },
 
   async testAi() {
+    if (this.data.testing) return
     this.setData({ testing: true })
     try {
       const settings = storage.settingsRepo.getSettings()

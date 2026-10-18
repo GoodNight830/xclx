@@ -1,98 +1,179 @@
-<view class="page">
-  <view class="page-header">
-    <view>
-      <view class="page-title">设置</view>
-      <view class="page-subtitle">训练参数、薄弱点与 AI 配置</view>
+<!--
+  设置页 UI（按小程序规范重写）
+
+  要点：
+  1. 所有可点击区域改用 <view> 实现，不再依赖原生 <button>——微信 button 自带
+     margin:auto / 固定尺寸等基础样式，是此前布局异常的根源。
+  2. 布局全部写在本地 settings.wxss，不复用 app.wxss 的 .btn / .card 规则。
+  3. 每个可点击元素都带 hover-class，保证按压反馈。
+-->
+<view class="st-page">
+
+  <view class="st-head">
+    <view class="st-title">设置</view>
+    <view class="st-sub">训练参数、薄弱点与 AI 配置</view>
+  </view>
+
+  <!-- ============ 训练参数 ============ -->
+  <view class="st-sec">
+    <view class="st-sec-title">训练参数</view>
+    <view class="st-card">
+
+      <picker range="{{modeOptions}}" value="{{modeIndex}}" bindchange="onModeChange">
+        <view class="st-row" hover-class="st-row-hover">
+          <view>
+            <view class="st-row-label">默认模式</view>
+            <view class="st-row-sub">开始训练时默认使用的模式</view>
+          </view>
+          <view class="st-row-value">{{modeLabel}}<text class="st-arrow"></text></view>
+        </view>
+      </picker>
+
+      <view class="st-slider-row">
+        <view class="st-slider-head">
+          <view class="st-row-label">默认题目数量</view>
+          <view class="st-slider-num">{{questionCount}} 题</view>
+        </view>
+        <slider min="1" max="100" step="1" value="{{questionCount}}" bindchange="onQuestionCountChange" activeColor="#2f9e6b" block-size="22" show-value="{{false}}" />
+      </view>
+
+      <view class="st-slider-row st-row-noborder">
+        <view class="st-slider-head">
+          <view class="st-row-label">默认允许误差</view>
+          <view class="st-slider-num">{{allowedErrorRate}}%</view>
+        </view>
+        <slider min="0" max="20" step="0.5" value="{{allowedErrorRate}}" bindchange="onErrorRateChange" activeColor="#2f9e6b" block-size="22" show-value="{{false}}" />
+      </view>
+
     </view>
   </view>
 
-  <!-- 训练参数 -->
-  <view class="section">
-    <view class="section-title">训练参数</view>
-    <view class="card">
-      <view class="field">
-        <view class="field-label">默认模式</view>
-        <picker range="{{['训练模式', '竞速模式']}}" value="{{defaultMode === 'speed' ? 1 : 0}}" bindchange="onModeChange">
-          <view class="input" hover-class="press-light">{{defaultMode === 'speed' ? '竞速模式' : '训练模式'}}</view>
-        </picker>
-      </view>
-      <view class="field">
-        <view class="field-label">默认题目数量（{{questionCount}} 题）</view>
-        <slider min="1" max="100" step="1" value="{{questionCount}}" bindchange="onQuestionCountChange" activeColor="#2f9e6b" />
-      </view>
-      <view class="field">
-        <view class="field-label">默认允许误差（{{allowedErrorRate}}%）</view>
-        <slider min="0" max="20" step="0.5" value="{{allowedErrorRate}}" bindchange="onErrorRateChange" activeColor="#2f9e6b" />
-      </view>
-    </view>
-  </view>
+  <!-- ============ 薄弱点分析 ============ -->
+  <view class="st-sec">
+    <view class="st-sec-title">薄弱点分析</view>
+    <view class="st-card">
 
-  <!-- 薄弱点配置 -->
-  <view class="section">
-    <view class="section-title">薄弱点分析</view>
-    <view class="card">
-      <view class="field">
-        <view class="field-label">启用薄弱点定向强化</view>
+      <view class="st-row" hover-class="st-row-hover">
+        <view>
+          <view class="st-row-label">启用薄弱点定向强化</view>
+          <view class="st-row-sub">提高易错除数范围的出题比例</view>
+        </view>
         <switch checked="{{weakEnable}}" bindchange="onWeakEnableChange" color="#2f9e6b" />
       </view>
-      <view class="field">
-        <view class="field-label">最小样本数（{{minSampleCount}} 题）</view>
-        <slider min="5" max="50" step="1" value="{{minSampleCount}}" bindchange="onMinSampleChange" activeColor="#2f9e6b" />
+
+      <view class="st-slider-row">
+        <view class="st-slider-head">
+          <view class="st-row-label">最小样本数</view>
+          <view class="st-slider-num">{{minSampleCount}} 题</view>
+        </view>
+        <slider min="5" max="50" step="1" value="{{minSampleCount}}" bindchange="onMinSampleChange" activeColor="#2f9e6b" block-size="22" show-value="{{false}}" />
       </view>
-      <view class="field">
-        <view class="field-label">最小错误数（{{minErrorCount}} 题）</view>
-        <slider min="1" max="20" step="1" value="{{minErrorCount}}" bindchange="onMinErrorChange" activeColor="#2f9e6b" />
+
+      <view class="st-slider-row">
+        <view class="st-slider-head">
+          <view class="st-row-label">最小错误数</view>
+          <view class="st-slider-num">{{minErrorCount}} 题</view>
+        </view>
+        <slider min="1" max="20" step="1" value="{{minErrorCount}}" bindchange="onMinErrorChange" activeColor="#2f9e6b" block-size="22" show-value="{{false}}" />
       </view>
-      <view class="field">
-        <view class="field-label">强化出题占比上限（{{maxReinforcementRatio}}%）</view>
-        <slider min="0" max="90" step="5" value="{{maxReinforcementRatio}}" bindchange="onMaxRatioChange" activeColor="#2f9e6b" />
+
+      <view class="st-slider-row st-row-noborder">
+        <view class="st-slider-head">
+          <view class="st-row-label">强化出题占比上限</view>
+          <view class="st-slider-num">{{maxReinforcementRatio}}%</view>
+        </view>
+        <slider min="0" max="90" step="5" value="{{maxReinforcementRatio}}" bindchange="onMaxRatioChange" activeColor="#2f9e6b" block-size="22" show-value="{{false}}" />
       </view>
+
     </view>
   </view>
 
-  <!-- AI 配置 -->
-  <view class="section">
-    <view class="section-title">AI 解读</view>
-    <view class="card">
-      <view class="field">
-        <view class="field-label">启用 AI 解读</view>
+  <!-- ============ AI 解读 ============ -->
+  <view class="st-sec">
+    <view class="st-sec-title">AI 解读</view>
+    <view class="st-card">
+
+      <view class="st-row" hover-class="st-row-hover">
+        <view>
+          <view class="st-row-label">启用 AI 解读</view>
+          <view class="st-row-sub">关闭后各页面不再展示 AI 相关入口</view>
+        </view>
         <switch checked="{{aiEnabled}}" bindchange="onAiEnabledChange" color="#2f9e6b" />
       </view>
+
       <block wx:if="{{aiEnabled}}">
-        <view class="field">
-          <view class="field-label">接口地址</view>
-          <input class="input" value="{{aiBaseUrl}}" bindinput="onAiBaseUrlInput" placeholder="https://api.deepseek.com" />
+        <view class="st-field">
+          <view class="st-field-label">接口地址</view>
+          <input class="st-input" value="{{aiBaseUrl}}" bindinput="onAiBaseUrlInput" placeholder="https://api.deepseek.com" placeholder-class="st-placeholder" />
         </view>
-        <view class="field">
-          <view class="field-label">API Key</view>
-          <input class="input" value="{{aiApiKey}}" bindinput="onAiApiKeyInput" password placeholder="sk-..." />
+
+        <view class="st-field">
+          <view class="st-field-label">API Key</view>
+          <input class="st-input" value="{{aiApiKey}}" bindinput="onAiApiKeyInput" password placeholder="sk-..." placeholder-class="st-placeholder" />
         </view>
-        <view class="field">
-          <view class="field-label">模型名称</view>
-          <input class="input" value="{{aiModel}}" bindinput="onAiModelInput" placeholder="deepseek-chat" />
+
+        <view class="st-field">
+          <view class="st-field-label">模型名称</view>
+          <input class="st-input" value="{{aiModel}}" bindinput="onAiModelInput" placeholder="deepseek-chat" placeholder-class="st-placeholder" />
         </view>
-        <view class="field">
-          <view class="field-label">同意发送聚合统计</view>
+
+        <view class="st-row" hover-class="st-row-hover">
+          <view>
+            <view class="st-row-label">同意发送聚合统计</view>
+            <view class="st-row-sub">仅发送聚合数据，不发送逐题答案</view>
+          </view>
           <switch checked="{{aiConsent}}" bindchange="onAiConsentChange" color="#2f9e6b" />
         </view>
-        <view class="field-hint">AI 只接收聚合统计，不发送逐题答案。API Key 保存在本机。</view>
-        <button class="btn btn-outline btn-block" bindtap="testAi" disabled="{{testing}}">{{testing ? '测试中…' : '测试连接'}}</button>
+
+        <view class="st-hint">API Key 仅保存在本机，不会随任何导出文件外泄。</view>
+
+        <view class="st-act st-act-outline" hover-class="st-act-outline-hover" bindtap="testAi">
+          {{testing ? '测试中…' : '测试连接'}}
+        </view>
       </block>
+
     </view>
   </view>
 
-  <!-- 数据管理 -->
-  <view class="section">
-    <view class="section-title">数据管理</view>
-    <view class="card">
-      <view wx:if="{{dataCounts}}" class="text-sm text-muted" style="margin-bottom: 16rpx">
-        训练组 {{dataCounts.sessions}} · 题目 {{dataCounts.questions}} · 错题 {{dataCounts.wrongQuestions}} · 薄弱点 {{dataCounts.weakPatterns}}
+  <!-- ============ 数据管理 ============ -->
+  <view class="st-sec">
+    <view class="st-sec-title">数据管理</view>
+    <view class="st-card">
+
+      <view wx:if="{{dataCounts}}" class="st-count-box">
+        <view class="st-count">
+          <view class="st-count-num">{{dataCounts.sessions}}</view>
+          <view class="st-count-label">训练组</view>
+        </view>
+        <view class="st-count">
+          <view class="st-count-num">{{dataCounts.questions}}</view>
+          <view class="st-count-label">题目</view>
+        </view>
+        <view class="st-count">
+          <view class="st-count-num">{{dataCounts.wrongQuestions}}</view>
+          <view class="st-count-label">错题</view>
+        </view>
+        <view class="st-count">
+          <view class="st-count-num">{{dataCounts.weakPatterns}}</view>
+          <view class="st-count-label">薄弱点</view>
+        </view>
       </view>
-      <button class="btn btn-outline btn-block" bindtap="resetSettings">恢复默认设置</button>
-      <button class="btn btn-danger btn-block" style="margin-top: 16rpx" bindtap="clearAllData">清空所有数据</button>
+
+      <view class="st-act st-act-outline" hover-class="st-act-outline-hover" bindtap="resetSettings">
+        恢复默认设置
+      </view>
+      <view class="st-act st-act-danger" hover-class="st-act-danger-hover" bindtap="clearAllData">
+        清空所有训练数据
+      </view>
+
     </view>
   </view>
 
-  <!-- 保存 -->
-  <button class="btn btn-primary btn-block" bindtap="save">保存设置</button>
+  <!-- ============ 保存 ============ -->
+  <view class="st-act st-act-primary st-act-foot" hover-class="st-act-primary-hover" bindtap="save">
+    保存设置
+  </view>
+
+  <view class="st-footnote">修改后需点击「保存设置」才会生效。</view>
+
 </view>

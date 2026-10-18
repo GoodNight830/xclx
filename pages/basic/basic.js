@@ -128,21 +128,6 @@ Page({
     wx.showToast({ title: mode === 'speed' ? '已切换到竞速模式' : '已切换到练习模式', icon: 'none' })
   },
 
-  startPractice(e) {
-    const mode = e.currentTarget.dataset.mode || null
-    const settings = this.data.settings
-    const target = mode || settings.defaultMode
-    const active = training.beginSession({
-      module: MODULE_FIVE_DIVIDE_THREE,
-      mode: target,
-      questionCount: settings.defaultQuestionCount,
-      allowedErrorRate: settings.defaultAllowedErrorRate,
-      weakPatterns: this.data.overview ? this.data.overview.weakPatterns : [],
-      weakConfig: settings.weakPattern
-    })
-    wx.navigateTo({ url: '/pages/training/training' })
-  },
-
   startWrongReview() {
     const wrongQuestions = queries.loadWrongQuestions({ module: 'five-divide-three', status: 'active' })
     training.beginSession({
