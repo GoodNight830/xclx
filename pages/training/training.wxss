@@ -4,7 +4,7 @@
   flex-direction: column;
   box-sizing: border-box;
   min-height: 100vh;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 24rpx);
+  padding-bottom: 40rpx;
 }
 
 .training-header {

@@ -19,7 +19,7 @@ page {
 
 .page {
   padding: 24rpx;
-  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  padding-bottom: 60rpx;
   box-sizing: border-box;
 }
 
@@ -128,7 +128,6 @@ page {
   margin-right: 12rpx;
   margin-bottom: 6rpx;
 }
-.row > :last-child { margin-right: 0; }
 
 /* ============ 文本工具 ============ */
 .bold { font-weight: 700; }
@@ -150,7 +149,6 @@ page {
   padding: 20rpx 0;
   border-bottom: 2rpx solid #f0f2f7;
 }
-.list-item:last-child { border-bottom: none; }
 .list-item-main {
   flex: 1;
   min-width: 0;
@@ -159,7 +157,6 @@ page {
 .list-item-main > text {
   margin-bottom: 6rpx;
 }
-.list-item-main > :last-child { margin-bottom: 0; }
 .list-item-meta {
   font-size: 24rpx;
   color: #8a93a6;
