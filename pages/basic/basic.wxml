@@ -8,19 +8,35 @@
 
   <view wx:if="{{errorMessage}}" class="alert alert-danger section">{{errorMessage}}</view>
 
+  <!-- 训练模式选择（总开关，选好后各题型直接用该模式开始） -->
+  <view class="section">
+    <view class="section-title">训练模式</view>
+    <view class="card">
+      <view class="tabs" style="margin-bottom: 0">
+        <button
+          class="tab {{settings.defaultMode === 'training' ? 'active' : ''}}"
+          data-mode="training"
+          bindtap="switchMode"
+        >练习模式</button>
+        <button
+          class="tab {{settings.defaultMode === 'speed' ? 'active' : ''}}"
+          data-mode="speed"
+          bindtap="switchMode"
+        >竞速模式</button>
+      </view>
+      <view class="field-hint">{{modeDescription}}</view>
+    </view>
+  </view>
+
   <!-- 快速开始 -->
   <view class="section">
     <view class="section-title">快速开始</view>
     <view class="card">
       <view class="card-title">五位数 ÷ 三位数</view>
       <view class="text-sm text-muted" style="margin-top: 8rpx">
-        最近常用：{{recentModeLabel}} · {{settings.defaultQuestionCount}} 题 · 允许误差 {{settings.defaultAllowedErrorRate}}%
+        当前模式：{{modeLabel}} · {{settings.defaultQuestionCount}} 题 · 允许误差 {{settings.defaultAllowedErrorRate}}%
       </view>
-      <button class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="startPractice">开始练习（{{recentModeLabel}}）</button>
-      <view class="topic-grid" style="margin-top: 16rpx">
-        <button class="btn topic-btn btn-outline" data-mode="training" bindtap="startPractice">训练模式</button>
-        <button class="btn topic-btn btn-outline" data-mode="speed" bindtap="startPractice">竞速模式</button>
-      </view>
+      <button class="btn btn-primary btn-block btn-lg" style="margin-top: 20rpx" bindtap="startPractice">开始训练（{{modeLabel}}）</button>
     </view>
   </view>
 

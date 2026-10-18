@@ -14,6 +14,8 @@ Page({
     loading: true,
     errorMessage: '',
     settings: null,
+    modeLabel: '练习模式',
+    modeDescription: '',
     recentModeLabel: '训练模式',
     unmasteredWrongCount: 0,
     weakHint: '',
@@ -59,6 +61,10 @@ Page({
         overview,
         loading: false,
         settings,
+        modeLabel: settings.defaultMode === 'speed' ? '竞速模式' : '练习模式',
+        modeDescription: settings.defaultMode === 'speed'
+          ? '竞速模式：固定题数，完成后结算，过程中不提示对错，等级由「是否全对 + 总用时」决定。'
+          : '练习模式：无限练习，即时纠错，由你主动结束，适合稳步提升。',
         recentModeLabel: speed > training ? '竞速模式' : '训练模式',
         unmasteredWrongCount: overview.unmasteredWrongCount,
         weakHint,
@@ -84,6 +90,23 @@ Page({
       return
     }
     wx.navigateTo({ url: '/pages/five-divide-three/five-divide-three' })
+  },
+
+  // 切换总训练模式（练习 / 竞速），持久化到设置，各题型页直接用该模式
+  switchMode(e) {
+    const mode = e.currentTarget.dataset.mode
+    if (!mode || !this.data.settings) return
+    if (this.data.settings.defaultMode === mode) return
+    const settings = { ...this.data.settings, defaultMode: mode }
+    storage.settingsRepo.saveSettings(settings)
+    this.setData({
+      settings,
+      modeLabel: mode === 'speed' ? '竞速模式' : '练习模式',
+      modeDescription: mode === 'speed'
+        ? '竞速模式：固定题数，完成后结算，过程中不提示对错，等级由「是否全对 + 总用时」决定。'
+        : '练习模式：无限练习，即时纠错，由你主动结束，适合稳步提升。'
+    })
+    wx.showToast({ title: mode === 'speed' ? '已切换到竞速模式' : '已切换到练习模式', icon: 'none' })
   },
 
   startPractice(e) {

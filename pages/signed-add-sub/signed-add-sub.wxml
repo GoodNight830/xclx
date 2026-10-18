@@ -24,15 +24,24 @@
   </view>
 
   <view class="card section">
-    <view class="card-title">训练模式</view>
-    <view class="card-subtitle">无限练习 · 即时纠错 · 用户主动结束</view>
-    <button class="btn btn-primary btn-lg btn-block" style="margin-top: 20rpx" data-mode="training" bindtap="start">开始训练模式</button>
-  </view>
-
-  <view class="card section">
-    <view class="card-title">竞速模式</view>
-    <view class="card-subtitle">{{settings.defaultQuestionCount}} 题 · 完成后结算 · 训练过程中不提示正确 / 错误</view>
-    <button class="btn btn-primary btn-lg btn-block" style="margin-top: 20rpx" data-mode="speed" bindtap="start">开始竞速模式</button>
+    <view class="row-between">
+      <view class="card-title">开始训练</view>
+      <text class="badge badge-success">{{modeLabel}}</text>
+    </view>
+    <view class="tabs" style="margin-bottom: 0; margin-top: 20rpx">
+      <button
+        class="tab {{settings.defaultMode === 'training' ? 'active' : ''}}"
+        data-mode="training"
+        bindtap="switchMode"
+      >练习模式</button>
+      <button
+        class="tab {{settings.defaultMode === 'speed' ? 'active' : ''}}"
+        data-mode="speed"
+        bindtap="switchMode"
+      >竞速模式</button>
+    </view>
+    <view class="card-subtitle" style="margin-top: 16rpx">{{modeDescription}}</view>
+    <button class="btn btn-primary btn-lg btn-block" style="margin-top: 20rpx" bindtap="start">开始训练（{{modeLabel}}）</button>
   </view>
 
   <view class="alert alert-info section">
