@@ -10,6 +10,7 @@ Page({
   data: {
     moduleOptions: [],
     selectedModule: MODULE_FIVE_DIVIDE_THREE,
+    moduleIndex: 0,
     selectedModuleTitle: '五除三',
     diagnosis: null,
     focusRanges: [],
@@ -29,7 +30,10 @@ Page({
       selectedModule = options.module
     }
     const selectedModuleTitle = (moduleOptions.find((m) => m.id === selectedModule) || {}).title || '五除三'
-    this.setData({ moduleOptions, selectedModule, selectedModuleTitle })
+    // picker 的 value 要的是下标，不是模块 id（原先直接把 id 传进去，属于类型错配）
+    const selectedIndex = moduleOptions.findIndex((m) => m.id === selectedModule)
+    const moduleIndex = selectedIndex >= 0 ? selectedIndex : 0
+    this.setData({ moduleOptions, selectedModule, moduleIndex, selectedModuleTitle })
     this.load()
   },
 
@@ -65,9 +69,10 @@ Page({
   },
 
   switchModule(e) {
-    const module = this.data.moduleOptions[e.detail.value]
+    const index = Number(e.detail.value)
+    const module = this.data.moduleOptions[index]
     if (!module) return
-    this.setData({ selectedModule: module.id, selectedModuleTitle: module.title })
+    this.setData({ selectedModule: module.id, moduleIndex: index, selectedModuleTitle: module.title })
     this.load()
   },
 

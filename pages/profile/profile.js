@@ -25,6 +25,7 @@ Page({
     // 训练记录
     moduleOptions: [],
     moduleFilter: '',
+    moduleFilterIndex: 0,
     range: '7d',
     ranges: [
       { key: 'today', label: '今天' },
@@ -34,6 +35,7 @@ Page({
     ],
     dateOptions: [],
     dateFilter: '',
+    dateFilterIndex: 0,
     moduleFilterLabel: '全部模块',
     summary: null,
     visibleDaily: [],
@@ -164,10 +166,13 @@ Page({
     const moduleOptions = [{ value: '', label: '全部模块' }].concat(
       this.data.modules.map((m) => ({ value: m.module, label: m.label }))
     )
+    // picker 的 value 必须是下标，不能直接传模块 id
+    const filterIndex = moduleOptions.findIndex((m) => m.value === this.data.moduleFilter)
     const moduleFilterLabel = (moduleOptions.find((m) => m.value === this.data.moduleFilter) || moduleOptions[0]).label
 
     this.setData({
       moduleOptions,
+      moduleFilterIndex: filterIndex >= 0 ? filterIndex : 0,
       moduleFilterLabel,
       summary: {
         ...history.summary,
@@ -176,6 +181,7 @@ Page({
       },
       dateOptions: this.allDaily.map((d) => d.date),
       dateFilter: '',
+      dateFilterIndex: 0,
       expandedSessionId: '',
       sessionRecords: {}
     })
@@ -201,8 +207,9 @@ Page({
   },
 
   switchModule(e) {
-    const module = this.data.moduleOptions[e.detail.value]
-    this.setData({ moduleFilter: module ? module.value : '', dateFilter: '' })
+    const index = Number(e.detail.value)
+    const module = this.data.moduleOptions[index]
+    this.setData({ moduleFilterIndex: index, moduleFilter: module ? module.value : '', dateFilter: '' })
     this.loadHistory()
   },
 
@@ -212,8 +219,9 @@ Page({
   },
 
   switchDate(e) {
-    const date = this.data.dateOptions[e.detail.value]
-    this.setData({ dateFilter: date || '' })
+    const index = Number(e.detail.value)
+    const date = this.data.dateOptions[index]
+    this.setData({ dateFilterIndex: index, dateFilter: date || '' })
     this.applyFilter()
   },
 

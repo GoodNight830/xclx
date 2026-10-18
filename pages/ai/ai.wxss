@@ -1,1 +1,5 @@
-/* AI 解读页样式 */
+/* AI 诊断页样式：先选模块，再查看/生成该模块的 AI 诊断 */
+.ai-module-chip {
+  padding: 20rpx 28rpx;
+  margin-top: 8rpx;
+}

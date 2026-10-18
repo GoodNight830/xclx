@@ -1,1 +1,53 @@
 /* 基础计算页样式 */
+
+/* 模块卡片 */
+.mod-card {
+  margin-bottom: 20rpx;
+}
+
+/* 模块操作区：1~2 个按钮并排。
+ * 每个按钮统一带 margin-right，容器用负 margin 抵消最后一个按钮的外边距，
+ * 这样无论 1 个还是 2 个按钮都能铺满卡片宽度（小程序不支持 :last-child）。 */
+.mod-actions {
+  display: flex;
+  margin-right: -16rpx;
+  margin-top: 20rpx;
+}
+.mod-act {
+  box-sizing: border-box;
+  flex: 1;
+  margin-right: 16rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  border-radius: 14rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}
+.mod-act-primary {
+  background: #2f9e6b;
+  color: #ffffff;
+}
+.mod-act-outline {
+  background: #ffffff;
+  color: #2f9e6b;
+  border: 2rpx solid #bfe6d2;
+}
+
+.mod-act-primary-hover { opacity: 0.7; }
+.mod-act-outline-hover { background: #eef3f0; }
+
+/* 「即将上线」的灰色标签（复用 .topic-grid 的负 margin 布局） */
+.topic-soon {
+  box-sizing: border-box;
+  width: calc(50% - 16rpx);
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 14rpx;
+  background: #f0f2f5;
+  color: #a3abba;
+  font-size: 26rpx;
+}

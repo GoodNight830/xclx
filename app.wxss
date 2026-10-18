@@ -247,6 +247,8 @@ page {
   padding: 0;
 }
 .tab::after { border: none; }
+/* tab 按压态（view 实现的分段选择用，配合 hover-class="tab-hover"） */
+.tab-hover { opacity: 0.75; }
 .tab.active {
   background: #ffffff;
   color: #2f9e6b;

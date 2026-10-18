@@ -60,13 +60,13 @@
     <view style="display: flex; margin-bottom: 16rpx">
       <view class="field" style="flex: 1; margin: 0">
         <view class="field-label">模块</view>
-        <picker range="{{moduleOptions}}" range-key="label" value="{{moduleFilter}}" bindchange="switchModule">
+        <picker range="{{moduleOptions}}" range-key="label" value="{{moduleFilterIndex}}" bindchange="switchModule">
           <view class="input" hover-class="press-light">{{moduleFilterLabel}}</view>
         </picker>
       </view>
       <view class="field" style="flex: 1; margin: 0 0 0 16rpx">
         <view class="field-label">日期</view>
-        <picker range="{{dateOptions}}" value="{{dateFilter}}" bindchange="switchDate">
+        <picker range="{{dateOptions}}" value="{{dateFilterIndex}}" bindchange="switchDate">
           <view class="input" hover-class="press-light">{{dateFilter ? dateFilter : '全部日期'}}</view>
         </picker>
       </view>

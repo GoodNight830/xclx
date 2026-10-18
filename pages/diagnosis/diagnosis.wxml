@@ -9,7 +9,7 @@
   <!-- 模块切换 -->
   <view wx:if="{{moduleOptions.length > 1}}" class="section">
     <view class="field-label">诊断模块</view>
-    <picker range="{{moduleOptions}}" range-key="title" value="{{selectedModule}}" bindchange="switchModule">
+    <picker range="{{moduleOptions}}" range-key="title" value="{{moduleIndex}}" bindchange="switchModule">
       <view class="input" hover-class="press-light">{{selectedModuleTitle}}</view>
     </picker>
   </view>
@@ -47,9 +47,9 @@
 
     <!-- AI 解读入口 -->
     <view class="card section">
-      <view class="card-title">AI 智能解读</view>
-      <view class="card-subtitle">用自然语言解释薄弱范围，并给出训练计划（独立页面）</view>
-      <button class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="goAi">进入 AI 解读</button>
+      <view class="card-title">AI 诊断</view>
+      <view class="card-subtitle">用自然语言解释薄弱范围并给出训练计划，会按上方模块自动选中</view>
+      <button class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="goAi">查看 AI 诊断</button>
     </view>
   </view>
 </view>

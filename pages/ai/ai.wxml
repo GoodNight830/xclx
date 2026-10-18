@@ -1,31 +1,45 @@
 <view class="page">
   <view class="page-header">
     <view>
-      <view class="page-title">AI 解读</view>
-      <view class="page-subtitle">选择模块，让 AI 解释薄弱范围并给出训练计划</view>
+      <view class="page-title">AI 诊断</view>
+      <view class="page-subtitle">选择要分析的模块，AI 依据聚合统计给出薄弱分析与训练计划</view>
     </view>
   </view>
 
-  <!-- 模块切换 -->
+  <!-- 模块选择：可在本页切换；从子模块进来时会自动选好对应模块 -->
   <view class="section">
     <view class="field-label">分析模块</view>
-    <picker range="{{moduleOptions}}" range-key="title" value="{{selectedModule}}" bindchange="switchModule">
-      <view class="input" hover-class="press-light">{{selectedModuleTitle}}</view>
-    </picker>
-    <view class="field-hint">仅发送该模块的聚合统计数据，不发送逐题答案。</view>
+
+    <!-- 多个模块可选时提供分段切换；只有一个模块时展示当前模块即可 -->
+    <view wx:if="{{moduleOptions.length > 1}}" class="tabs" style="margin-bottom: 0">
+      <view
+        wx:for="{{moduleOptions}}"
+        wx:key="id"
+        class="tab {{item.id === selectedModule ? 'active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="switchModule"
+        hover-class="tab-hover"
+      >{{item.subtitle || item.title}}</view>
+    </view>
+    <view wx:else class="card ai-module-chip">
+      <view class="bold">{{selectedModuleTitle}}</view>
+      <view class="text-sm text-muted" style="margin-top: 6rpx">{{selectedModuleSubtitle}}</view>
+    </view>
+
+    <view class="field-hint">只上传该模块的聚合统计（错误率、样本量、薄弱范围），不上传逐题答案。</view>
   </view>
 
   <view wx:if="{{errorText}}" class="alert alert-danger section">{{errorText}}</view>
 
-  <view wx:if="{{!hasData}}" class="empty">还没有可分析的数据，完成一组训练后 AI 才能生成解读。</view>
+  <view wx:if="{{!hasData}}" class="empty">还没有「{{selectedModuleTitle}}」的训练数据，完成一组训练后 AI 才能给出诊断。</view>
 
   <view wx:else>
-    <!-- 解读卡片 -->
+    <!-- 诊断卡片 -->
     <view class="card section">
       <view class="row-between">
         <view>
-          <view class="card-title">解读</view>
-          <view class="card-subtitle">仅发送聚合数据，不发送逐题答案</view>
+          <view class="card-title">最近一次 AI 诊断</view>
+          <view class="card-subtitle">{{selectedModuleTitle}} · 仅发送聚合数据，不发送逐题答案</view>
         </view>
         <text wx:if="{{latestAi}}" class="badge">{{latestAi.model}}</text>
       </view>
@@ -66,18 +80,18 @@
         </view>
       </block>
 
-      <view wx:else class="text-sm text-muted" style="margin-top: 20rpx">尚未生成 AI 报告。点击下方按钮生成。</view>
+      <view wx:else class="text-sm text-muted" style="margin-top: 20rpx">尚未生成 AI 诊断报告。点击下方按钮生成。</view>
 
       <button wx:if="{{canAnalyze}}" class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="generate" disabled="{{generating || (latestAi && latestAi.dataHash === diagnosis.dataHash)}}">
-        {{generating ? '正在分析 ' + elapsedSeconds + 's' : (latestAi && latestAi.dataHash === diagnosis.dataHash ? '数据无变化' : '生成 AI 报告')}}
+        {{generating ? '正在分析 ' + elapsedSeconds + 's' : (latestAi && latestAi.dataHash === diagnosis.dataHash ? '数据无变化' : '生成 AI 诊断')}}
       </button>
       <button wx:else class="btn btn-outline btn-block" style="margin-top: 20rpx" bindtap="goSettings">配置 AI 服务</button>
     </view>
 
     <!-- 历史报告 -->
     <view wx:if="{{aiHistory.length}}" class="section">
-      <view class="collapse-header" bindtap="toggleHistory" hover-class="press-light">
-        <view class="collapse-title">历史报告</view>
+        <view class="collapse-header" bindtap="toggleHistory" hover-class="press-light">
+          <view class="collapse-title">历史诊断报告</view>
         <view class="collapse-meta">{{aiHistory.length}} 份 <text class="collapse-chevron {{historyExpanded ? 'open' : ''}}"></text></view>
       </view>
       <view wx:if="{{historyExpanded}}" class="collapse-content">

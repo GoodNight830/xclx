@@ -1,16 +1,42 @@
 /**
- * 基础计算页：模式总开关 + 题型网格 + 薄弱点提示 + 训练工具 + 错题重练。
+ * 基础计算页：模式总开关 + 训练模块 + 薄弱点提示 + 训练工具 + 错题重练。
  *
  * 说明：
  * - 「今日概览」统一放在「首页」Tab，这里不重复渲染同一份数据。
  * - 点题型即直接开练，不再经模块详情页中转；原 five-divide-three / signed-add-sub
  *   两个详情页的内容已全部被设置页、薄弱点页、能力诊断页覆盖，已下线。
+ * - 已开放模块列表从 utils/registry 读取，模块的 description 与「是否支持 AI 诊断」
+ *   都以注册表为唯一数据源，避免页面里再硬编码一套。
  */
 const queries = require('../../utils/queries')
 const storage = require('../../utils/storage')
 const { weakPatternSuggestion } = require('../../utils/weakPattern')
 const training = require('../../utils/training')
+const { arithmeticModules } = require('../../utils/registry')
 const { MODULE_FIVE_DIVIDE_THREE, MODULE_SIGNED_ADD_SUB } = require('../../utils/config')
+
+// 尚未实现的题型（占位，等算法完成后到 registry 里注册即可）
+const UPCOMING_TOPICS = [
+  { key: 'three-add', title: '三位数加法' },
+  { key: 'three-sub', title: '三位数减法' },
+  { key: 'three-add-sub', title: '三位数加减' },
+  { key: 'four-add', title: '四位数加法' },
+  { key: 'three-mul-one', title: '三位数乘一位数' },
+  { key: 'three-div-one', title: '三位数除一位数' },
+  { key: 'two-mul-two', title: '两位数乘两位数' },
+  { key: 'mul-estimate', title: '乘法估算' }
+]
+
+function buildAvailableTopics() {
+  return arithmeticModules
+    .filter((m) => m.meta.enabled)
+    .map((m) => ({
+      key: m.meta.id,
+      title: m.meta.subtitle || m.meta.title,
+      desc: m.meta.description || '',
+      aiSupported: Boolean(m.meta.aiSupported)
+    }))
+}
 
 Page({
   data: {
@@ -22,18 +48,12 @@ Page({
     modeDescription: '',
     unmasteredWrongCount: 0,
     weakHint: '',
-    topics: [
-      { key: 'five-divide-three', title: '五位数÷三位数', available: true },
-      { key: 'signed-add-sub', title: '正负运算', available: true },
-      { key: 'three-add', title: '三位数加法', available: false },
-      { key: 'three-sub', title: '三位数减法', available: false },
-      { key: 'three-add-sub', title: '三位数加减', available: false },
-      { key: 'four-add', title: '四位数加法', available: false },
-      { key: 'three-mul-one', title: '三位数乘一位数', available: false },
-      { key: 'three-div-one', title: '三位数除一位数', available: false },
-      { key: 'two-mul-two', title: '两位数乘两位数', available: false },
-      { key: 'mul-estimate', title: '乘法估算', available: false }
-    ]
+    availableTopics: [],
+    upcomingTopics: UPCOMING_TOPICS
+  },
+
+  onLoad() {
+    this.setData({ availableTopics: buildAvailableTopics() })
   },
 
   onShow() {
@@ -69,12 +89,18 @@ Page({
     return pattern ? weakPatternSuggestion(pattern) : ''
   },
 
-  // 点题型直接使用总开关选好的模式开始训练，不再进入中间页
+  // 直接使用总开关选好的模式开始训练，不再进入中间页
   openTopic(e) {
     const key = e.currentTarget.dataset.key
-    const topic = this.data.topics.find((t) => t.key === key)
-    if (!topic || !topic.available) return
+    if (!this.data.availableTopics.some((t) => t.key === key)) return
     this.startModule(key)
+  },
+
+  // 子模块的「AI 诊断」入口：只做跳转，由 AI 诊断页自动选中该模块并展示最近的诊断数据
+  goModuleDiagnosis(e) {
+    const key = e.currentTarget.dataset.key
+    if (!key) return
+    wx.navigateTo({ url: '/pages/ai/ai?module=' + key })
   },
 
   startModule(key) {

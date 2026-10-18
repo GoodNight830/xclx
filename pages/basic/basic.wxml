@@ -28,20 +28,31 @@
     </view>
   </view>
 
-  <!-- 全部题型（点击直接用上方选好的模式开始） -->
+  <!-- 训练模块：点「开始训练」直接用上方选好的模式开始；支持 AI 的模块额外提供诊断入口 -->
   <view class="section">
-    <view class="section-title">全部题型</view>
-    <view class="topic-grid">
-      <button
-        wx:for="{{topics}}"
-        wx:key="key"
-        class="btn topic-btn {{item.available ? 'btn-outline topic-available' : 'btn-outline'}}"
-        disabled="{{!item.available}}"
-        data-key="{{item.key}}"
-        bindtap="openTopic"
-      >{{item.title}}</button>
+    <view class="section-title">训练模块</view>
+
+    <view wx:for="{{availableTopics}}" wx:key="key" class="card mod-card">
+      <view class="card-title">{{item.title}}</view>
+      <view wx:if="{{item.desc}}" class="text-sm text-muted" style="margin-top: 8rpx">{{item.desc}}</view>
+
+      <view class="mod-actions">
+        <view class="mod-act mod-act-primary" hover-class="mod-act-primary-hover" data-key="{{item.key}}" bindtap="openTopic">
+          开始训练 · {{modeLabel}}
+        </view>
+        <view wx:if="{{item.aiSupported}}" class="mod-act mod-act-outline" hover-class="mod-act-outline-hover" data-key="{{item.key}}" bindtap="goModuleDiagnosis">
+          AI 诊断
+        </view>
+      </view>
     </view>
-    <view class="field-hint" style="margin-top: 12rpx">点击已开放题型，直接以「{{modeLabel}}」开始训练（灰色题型即将上线）。</view>
+  </view>
+
+  <!-- 即将上线 -->
+  <view class="section">
+    <view class="section-title">即将上线</view>
+    <view class="topic-grid">
+      <view wx:for="{{upcomingTopics}}" wx:key="key" class="topic-soon">{{item.title}}</view>
+    </view>
   </view>
 
   <!-- 薄弱点提示 -->
@@ -83,7 +94,7 @@
         <view class="list-item" data-page="diagnosis" bindtap="goTo" hover-class="press-light">
           <view class="list-item-main">
             <view class="bold">◉ 能力诊断</view>
-            <view class="text-sm text-muted">长期基线、近期变化与 AI 解读</view>
+            <view class="text-sm text-muted">长期基线、近期变化与 AI 诊断入口</view>
           </view>
           <text class="text-muted">›</text>
         </view>

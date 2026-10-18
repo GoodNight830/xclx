@@ -15,6 +15,7 @@ Page({
     moduleOptions: [],
     selectedModule: MODULE_FIVE_DIVIDE_THREE,
     selectedModuleTitle: '五除三',
+    selectedModuleSubtitle: '',
     diagnosis: null,
     latestAi: null,
     aiHistory: [],
@@ -31,14 +32,15 @@ Page({
 
   onLoad(options) {
     const moduleOptions = listAiModules().map((m) => ({ id: m.meta.id, title: m.meta.title, subtitle: m.meta.subtitle }))
-    let selectedModule = MODULE_FIVE_DIVIDE_THREE
-    if (options.module && moduleOptions.some((m) => m.id === options.module)) {
-      selectedModule = options.module
-    }
+    const fallback = moduleOptions[0] || { id: MODULE_FIVE_DIVIDE_THREE, title: '五除三', subtitle: '' }
+    // 支持从子模块直接进来：/pages/ai/ai?module=xxx 会自动选中该模块
+    const incoming = options.module && moduleOptions.find((m) => m.id === options.module)
+    const current = incoming || fallback
     this.setData({
       moduleOptions,
-      selectedModule,
-      selectedModuleTitle: moduleOptions.find((m) => m.id === selectedModule)?.title || '五除三'
+      selectedModule: current.id,
+      selectedModuleTitle: current.title,
+      selectedModuleSubtitle: current.subtitle || ''
     })
     this.load()
   },
@@ -59,10 +61,16 @@ Page({
     })
   },
 
+  // 由点击直接切换模块（原来是 picker，e.detail.value 传的是下标，容易与模块 id 混淆）
   switchModule(e) {
-    const module = this.data.moduleOptions[e.detail.value]
-    if (!module) return
-    this.setData({ selectedModule: module.id, selectedModuleTitle: module.title })
+    const id = e.currentTarget.dataset.id
+    const target = this.data.moduleOptions.find((m) => m.id === id)
+    if (!target || target.id === this.data.selectedModule) return
+    this.setData({
+      selectedModule: target.id,
+      selectedModuleTitle: target.title,
+      selectedModuleSubtitle: target.subtitle || ''
+    })
     this.load()
   },
 
