@@ -6,7 +6,7 @@ const format = require('../../utils/format')
 const storage = require('../../utils/storage')
 const { weakPatternSuggestion } = require('../../utils/weakPattern')
 const training = require('../../utils/training')
-const { MODULE_FIVE_DIVIDE_THREE } = require('../../utils/config')
+const { MODULE_FIVE_DIVIDE_THREE, MODULE_SIGNED_ADD_SUB } = require('../../utils/config')
 
 Page({
   data: {
@@ -81,15 +81,50 @@ Page({
     return pattern ? weakPatternSuggestion(pattern) : ''
   },
 
+  // 点题型直接使用总开关选好的模式开始训练，不再进入中间页
   openTopic(e) {
     const key = e.currentTarget.dataset.key
     const topic = this.data.topics.find((t) => t.key === key)
     if (!topic || !topic.available) return
-    if (topic.key === 'signed-add-sub') {
-      wx.navigateTo({ url: '/pages/signed-add-sub/signed-add-sub' })
-      return
+    this.startModule(key)
+  },
+
+  startModule(key) {
+    const settings = this.data.settings
+    if (!settings) return
+    const mode = settings.defaultMode || 'training'
+    try {
+      if (key === 'signed-add-sub') {
+        training.beginSession({
+          module: MODULE_SIGNED_ADD_SUB,
+          mode,
+          questionCount: settings.defaultQuestionCount,
+          allowedErrorRate: 0
+        })
+      } else {
+        training.beginSession({
+          module: MODULE_FIVE_DIVIDE_THREE,
+          mode,
+          questionCount: settings.defaultQuestionCount,
+          allowedErrorRate: settings.defaultAllowedErrorRate,
+          weakPatterns: this.data.overview ? this.data.overview.weakPatterns : [],
+          weakConfig: settings.weakPattern
+        })
+      }
+      wx.navigateTo({ url: '/pages/training/training' })
+    } catch (err) {
+      wx.showToast({ title: err.message || '开始失败', icon: 'none' })
     }
-    wx.navigateTo({ url: '/pages/five-divide-three/five-divide-three' })
+  },
+
+  // 次要入口：查看模块详情（配置 / 强化范围 / 错题重练 / AI 入口）
+  goModuleInfo(e) {
+    const page = e.currentTarget.dataset.page
+    const urls = {
+      'five-divide-three': '/pages/five-divide-three/five-divide-three',
+      'signed-add-sub': '/pages/signed-add-sub/signed-add-sub'
+    }
+    if (urls[page]) wx.navigateTo({ url: urls[page] })
   },
 
   // 切换总训练模式（练习 / 竞速），持久化到设置，各题型页直接用该模式

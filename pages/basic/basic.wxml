@@ -40,7 +40,7 @@
     </view>
   </view>
 
-  <!-- 全部题型 -->
+  <!-- 全部题型（点击直接用上方选好的模式开始） -->
   <view class="section">
     <view class="section-title">全部题型</view>
     <view class="topic-grid">
@@ -53,7 +53,30 @@
         bindtap="openTopic"
       >{{item.title}}</button>
     </view>
-    <view class="field-hint" style="margin-top: 12rpx">灰色题型即将上线，点击已开放题型直接开始训练。</view>
+    <view class="field-hint" style="margin-top: 12rpx">点击已开放题型，直接以「{{modeLabel}}」开始训练（灰色题型即将上线）。</view>
+  </view>
+
+  <!-- 模块信息（次要入口） -->
+  <view class="section">
+    <view class="section-title">模块信息</view>
+    <view class="card">
+      <view class="list">
+        <view class="list-item" data-page="five-divide-three" bindtap="goModuleInfo">
+          <view class="list-item-main">
+            <view class="bold">五位数 ÷ 三位数</view>
+            <view class="text-sm text-muted">配置 · 薄弱点强化范围 · 错题重练 · AI 诊断</view>
+          </view>
+          <text class="text-muted">›</text>
+        </view>
+        <view class="list-item" data-page="signed-add-sub" bindtap="goModuleInfo">
+          <view class="list-item-main">
+            <view class="bold">正负运算</view>
+            <view class="text-sm text-muted">配置 · 纯练习模块</view>
+          </view>
+          <text class="text-muted">›</text>
+        </view>
+      </view>
+    </view>
   </view>
 
   <!-- 今日概览 -->
