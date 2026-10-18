@@ -13,7 +13,7 @@
       <view class="field">
         <view class="field-label">默认模式</view>
         <picker range="{{['训练模式', '竞速模式']}}" value="{{defaultMode === 'speed' ? 1 : 0}}" bindchange="onModeChange">
-          <view class="input">{{defaultMode === 'speed' ? '竞速模式' : '训练模式'}}</view>
+          <view class="input" hover-class="press-light">{{defaultMode === 'speed' ? '竞速模式' : '训练模式'}}</view>
         </picker>
       </view>
       <view class="field">

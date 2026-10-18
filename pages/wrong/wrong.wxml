@@ -29,7 +29,7 @@
   <view wx:else class="card">
     <view class="list">
       <view wx:for="{{list}}" wx:key="id" class="list-item" style="align-items: flex-start">
-        <view wx:if="{{selectMode}}" style="margin-right: 16rpx; margin-top: 4rpx" data-id="{{item.id}}" bindtap="toggleSelect">
+        <view wx:if="{{selectMode}}" style="margin-right: 16rpx; margin-top: 4rpx" data-id="{{item.id}}" bindtap="toggleSelect" hover-class="press-fade">
           <text style="font-size: 36rpx">{{item.selected ? '☑' : '☐'}}</text>
         </view>
         <view class="list-item-main">

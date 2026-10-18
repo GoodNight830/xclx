@@ -10,7 +10,7 @@
   <view wx:if="{{moduleOptions.length > 1}}" class="section">
     <view class="field-label">诊断模块</view>
     <picker range="{{moduleOptions}}" range-key="title" value="{{selectedModule}}" bindchange="switchModule">
-      <view class="input">{{selectedModuleTitle}}</view>
+      <view class="input" hover-class="press-light">{{selectedModuleTitle}}</view>
     </picker>
   </view>
 
@@ -19,7 +19,7 @@
   <view wx:else>
     <!-- 薄弱范围 -->
     <view class="section">
-      <view class="collapse-header" bindtap="toggleFocus">
+      <view class="collapse-header" bindtap="toggleFocus" hover-class="press-light">
         <view class="collapse-title">薄弱范围</view>
         <view class="collapse-meta">
           <text class="collapse-chevron {{focusExpanded ? 'open' : ''}}"></text>

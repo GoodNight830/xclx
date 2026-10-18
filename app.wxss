@@ -89,6 +89,25 @@ page {
 }
 .btn::after { border: none; }
 
+/* ============ 点击反馈 ============ */
+/* 微信 <button> 的默认 hover-class 名称固定为 "button-hover"，
+ * 只要在 app.wxss 里定义这个类，全项目按钮自动获得按压效果，无需逐个改 wxml。
+ * 加 !important 是为了覆盖微信内置基础样式。 */
+.button-hover {
+  opacity: 0.65 !important;
+}
+
+/* 可点击 view 的按压态（wxml 上加 hover-class="press-light"）。
+ * view 的 hover-stay-time 默认 400ms，无需额外参数。 */
+.press-light {
+  background: #e6efea !important;
+}
+
+/* 可点击 view 的备用按压态：只降透明度，适合本身带底色的元素 */
+.press-fade {
+  opacity: 0.65;
+}
+
 .btn-primary { background: #2f9e6b; color: #ffffff; }
 .btn-secondary { background: #eaf7f0; color: #2f9e6b; }
 .btn-outline { background: #ffffff; color: #2f9e6b; border: 2rpx solid #bfe6d2; }

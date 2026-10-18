@@ -1,8 +1,8 @@
 /**
- * 基础计算页：快速开始 + 题型网格 + 今日概览 + 薄弱点 + 训练工具。
+ * 基础计算页：模式总开关 + 快速开始 + 题型网格 + 模块信息 + 薄弱点 + 训练工具。
+ * 说明：今日概览统一放在「首页」Tab，这里不再重复渲染同一份数据。
  */
 const queries = require('../../utils/queries')
-const format = require('../../utils/format')
 const storage = require('../../utils/storage')
 const { weakPatternSuggestion } = require('../../utils/weakPattern')
 const training = require('../../utils/training')
@@ -16,11 +16,8 @@ Page({
     settings: null,
     modeLabel: '练习模式',
     modeDescription: '',
-    recentModeLabel: '训练模式',
     unmasteredWrongCount: 0,
     weakHint: '',
-    todayAccuracy: '—',
-    todayAvg: '—',
     topics: [
       { key: 'five-divide-three', title: '五位数÷三位数', available: true },
       { key: 'signed-add-sub', title: '正负运算', available: true },
@@ -44,16 +41,6 @@ Page({
     try {
       const settings = storage.settingsRepo.getSettings()
       const overview = queries.loadOverview('five-divide-three')
-      const today = overview.today
-
-      // 最近常用模式（近30天）
-      const history = queries.loadHistory('30d', 'five-divide-three')
-      let training = 0
-      let speed = 0
-      for (const s of history.sessions) {
-        if (s.mode === 'speed') speed += 1
-        else training += 1
-      }
 
       const weakHint = this.computeWeakHint(overview.weakPatterns)
 
@@ -65,11 +52,8 @@ Page({
         modeDescription: settings.defaultMode === 'speed'
           ? '竞速模式：固定题数，完成后结算，过程中不提示对错，等级由「是否全对 + 总用时」决定。'
           : '练习模式：无限练习，即时纠错，由你主动结束，适合稳步提升。',
-        recentModeLabel: speed > training ? '竞速模式' : '训练模式',
         unmasteredWrongCount: overview.unmasteredWrongCount,
-        weakHint,
-        todayAccuracy: today.questionCount > 0 ? format.formatPercent(today.accuracy) : '—',
-        todayAvg: today.questionCount > 0 ? format.formatMs(today.avgElapsedMs) : '—'
+        weakHint
       })
     } catch (e) {
       this.setData({ loading: false, errorMessage: e.message || '加载失败' })

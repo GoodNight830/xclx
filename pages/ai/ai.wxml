@@ -10,7 +10,7 @@
   <view class="section">
     <view class="field-label">分析模块</view>
     <picker range="{{moduleOptions}}" range-key="title" value="{{selectedModule}}" bindchange="switchModule">
-      <view class="input">{{selectedModuleTitle}}</view>
+      <view class="input" hover-class="press-light">{{selectedModuleTitle}}</view>
     </picker>
     <view class="field-hint">仅发送该模块的聚合统计数据，不发送逐题答案。</view>
   </view>
@@ -33,7 +33,7 @@
       <block wx:if="{{latestAi}}">
         <view class="bold" style="margin-top: 20rpx">{{latestAi.report.summary}}</view>
 
-        <view class="collapse-header" style="margin-top: 16rpx" bindtap="toggleDetail">
+        <view class="collapse-header" style="margin-top: 16rpx" bindtap="toggleDetail" hover-class="press-light">
           <view class="collapse-meta">{{aiDetailExpanded ? '收起详情' : '查看详情'}}</view>
           <text class="collapse-chevron {{aiDetailExpanded ? 'open' : ''}}"></text>
         </view>
@@ -76,7 +76,7 @@
 
     <!-- 历史报告 -->
     <view wx:if="{{aiHistory.length}}" class="section">
-      <view class="collapse-header" bindtap="toggleHistory">
+      <view class="collapse-header" bindtap="toggleHistory" hover-class="press-light">
         <view class="collapse-title">历史报告</view>
         <view class="collapse-meta">{{aiHistory.length}} 份 <text class="collapse-chevron {{historyExpanded ? 'open' : ''}}"></text></view>
       </view>

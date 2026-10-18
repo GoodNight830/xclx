@@ -61,44 +61,20 @@
     <view class="section-title">模块信息</view>
     <view class="card">
       <view class="list">
-        <view class="list-item" data-page="five-divide-three" bindtap="goModuleInfo">
+        <view class="list-item" data-page="five-divide-three" bindtap="goModuleInfo" hover-class="press-light">
           <view class="list-item-main">
             <view class="bold">五位数 ÷ 三位数</view>
             <view class="text-sm text-muted">配置 · 薄弱点强化范围 · 错题重练 · AI 诊断</view>
           </view>
           <text class="text-muted">›</text>
         </view>
-        <view class="list-item" data-page="signed-add-sub" bindtap="goModuleInfo">
+        <view class="list-item" data-page="signed-add-sub" bindtap="goModuleInfo" hover-class="press-light">
           <view class="list-item-main">
             <view class="bold">正负运算</view>
             <view class="text-sm text-muted">配置 · 纯练习模块</view>
           </view>
           <text class="text-muted">›</text>
         </view>
-      </view>
-    </view>
-  </view>
-
-  <!-- 今日概览 -->
-  <view class="section">
-    <view class="section-title">今日概览</view>
-    <view wx:if="{{loading}}" class="empty">正在加载数据…</view>
-    <view wx:else class="stat-grid">
-      <view class="stat">
-        <view class="stat-label">今日训练组数</view>
-        <view class="stat-value stat-value-sm">{{overview.today.sessionCount}}</view>
-      </view>
-      <view class="stat">
-        <view class="stat-label">今日题目数</view>
-        <view class="stat-value stat-value-sm">{{overview.today.questionCount}}</view>
-      </view>
-      <view class="stat">
-        <view class="stat-label">今日正确率</view>
-        <view class="stat-value stat-value-sm">{{todayAccuracy}}</view>
-      </view>
-      <view class="stat">
-        <view class="stat-label">平均单题用时</view>
-        <view class="stat-value stat-value-sm">{{todayAvg}}</view>
       </view>
     </view>
   </view>
@@ -118,28 +94,28 @@
     <view class="section-title">训练工具</view>
     <view class="card">
       <view class="list">
-        <view class="list-item" data-page="wrong" bindtap="goTo">
+        <view class="list-item" data-page="wrong" bindtap="goTo" hover-class="press-light">
           <view class="list-item-main">
             <view class="bold">📕 错题本</view>
             <view class="text-sm text-muted">未掌握 {{unmasteredWrongCount}} 题</view>
           </view>
           <text class="text-muted">›</text>
         </view>
-        <view class="list-item" data-page="profile" bindtap="goTo">
+        <view class="list-item" data-page="profile" bindtap="goTo" hover-class="press-light">
           <view class="list-item-main">
             <view class="bold">📈 训练记录</view>
             <view class="text-sm text-muted">历史统计与每日趋势</view>
           </view>
           <text class="text-muted">›</text>
         </view>
-        <view class="list-item" data-page="weak" bindtap="goTo">
+        <view class="list-item" data-page="weak" bindtap="goTo" hover-class="press-light">
           <view class="list-item-main">
             <view class="bold">🎯 薄弱点</view>
             <view class="text-sm text-muted">个人薄弱除数范围</view>
           </view>
           <text class="text-muted">›</text>
         </view>
-        <view class="list-item" data-page="diagnosis" bindtap="goTo">
+        <view class="list-item" data-page="diagnosis" bindtap="goTo" hover-class="press-light">
           <view class="list-item-main">
             <view class="bold">◉ 能力诊断</view>
             <view class="text-sm text-muted">长期基线、近期变化与 AI 解读</view>

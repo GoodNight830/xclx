@@ -14,6 +14,7 @@
       class="category-card {{item.available ? '' : 'category-card-disabled'}}"
       data-key="{{item.key}}"
       bindtap="openCategory"
+      hover-class="press-light"
     >
       <view class="category-icon">{{item.icon}}</view>
       <view class="category-title">

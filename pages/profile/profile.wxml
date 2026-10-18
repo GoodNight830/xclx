@@ -61,13 +61,13 @@
       <view class="field" style="flex: 1; margin: 0">
         <view class="field-label">模块</view>
         <picker range="{{moduleOptions}}" range-key="label" value="{{moduleFilter}}" bindchange="switchModule">
-          <view class="input">{{moduleFilterLabel}}</view>
+          <view class="input" hover-class="press-light">{{moduleFilterLabel}}</view>
         </picker>
       </view>
       <view class="field" style="flex: 1; margin: 0 0 0 16rpx">
         <view class="field-label">日期</view>
         <picker range="{{dateOptions}}" value="{{dateFilter}}" bindchange="switchDate">
-          <view class="input">{{dateFilter ? dateFilter : '全部日期'}}</view>
+          <view class="input" hover-class="press-light">{{dateFilter ? dateFilter : '全部日期'}}</view>
         </picker>
       </view>
     </view>
@@ -111,7 +111,7 @@
       <view class="card-subtitle">训练 {{item.sessionCount}} 组 / 共 {{item.questionCount}} 题 · 正确率 {{item.accuracyLabel}}</view>
 
       <view class="list" style="margin-top: 16rpx">
-        <view wx:for="{{item.sessions}}" wx:for-item="session" wx:key="id" class="list-item">
+        <view wx:for="{{item.sessions}}" wx:for-item="session" wx:key="id" class="list-item" hover-class="press-light">
           <view class="list-item-main" data-id="{{session.id}}" bindtap="toggleSession">
             <view class="row">
               <text class="badge badge-muted">{{session.mode === 'speed' ? '竞速' : '训练'}}</text>
