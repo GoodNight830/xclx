@@ -66,11 +66,14 @@ page {
   margin-top: 8rpx;
 }
 
-/* ============ 按钮（原生 button，规范写法） ============ */
+/* ============ 按钮（原生 button，规范写法） ============
+ * 微信 button 默认样式带 margin-left/right:auto，会把按钮推到居中/右侧。
+ * 必须用 !important 强制归零，否则普通 margin: 0 优先级不够。
+ */
 .btn {
   display: block;
   box-sizing: border-box;
-  margin: 0;
+  margin: 0 !important;
   padding: 0 32rpx;
   height: 88rpx;
   line-height: 88rpx;
@@ -82,6 +85,7 @@ page {
   overflow: hidden;
   white-space: nowrap;
   border: none;
+  width: auto;
 }
 .btn::after { border: none; }
 
@@ -97,19 +101,7 @@ page {
 
 .btn[disabled] { opacity: 0.4; }
 
-/* 按钮横排容器：不依赖 flex gap，用负 margin + 子项 margin */
-.btn-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-right: -16rpx;
-  margin-bottom: -16rpx;
-}
-.btn-row > .btn,
-.btn-row > button {
-  margin-right: 16rpx;
-  margin-bottom: 16rpx;
-}
+/* 并排按钮一律使用 .topic-grid 容器（两列等宽），不再使用 btn-row */
 
 /* ============ 通用行布局 ============ */
 .row-between {
@@ -232,7 +224,7 @@ page {
   color: #4a5264;
   border-radius: 12rpx;
   background: transparent;
-  margin: 0;
+  margin: 0 !important;
   padding: 0;
 }
 .tab::after { border: none; }

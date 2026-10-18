@@ -61,6 +61,6 @@
 
     <view class="text-sm text-muted" style="margin-top: 16rpx">{{item.suggestion}}</view>
 
-    <button class="btn btn-primary btn-sm" style="margin-top: 16rpx" data-id="{{item.id}}" bindtap="trainRange">训练薄弱范围</button>
+    <button class="btn btn-primary btn-block" style="margin-top: 16rpx" data-id="{{item.id}}" bindtap="trainRange">训练薄弱范围</button>
   </view>
 </view>

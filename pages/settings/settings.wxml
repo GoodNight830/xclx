@@ -88,10 +88,8 @@
       <view wx:if="{{dataCounts}}" class="text-sm text-muted" style="margin-bottom: 16rpx">
         训练组 {{dataCounts.sessions}} · 题目 {{dataCounts.questions}} · 错题 {{dataCounts.wrongQuestions}} · 薄弱点 {{dataCounts.weakPatterns}}
       </view>
-      <view class="btn-row">
-        <button class="btn btn-outline" bindtap="resetSettings">恢复默认设置</button>
-        <button class="btn btn-danger" bindtap="clearAllData">清空所有数据</button>
-      </view>
+      <button class="btn btn-outline btn-block" bindtap="resetSettings">恢复默认设置</button>
+      <button class="btn btn-danger btn-block" style="margin-top: 16rpx" bindtap="clearAllData">清空所有数据</button>
     </view>
   </view>
 

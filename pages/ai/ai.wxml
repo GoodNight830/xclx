@@ -68,12 +68,10 @@
 
       <view wx:else class="text-sm text-muted" style="margin-top: 20rpx">尚未生成 AI 报告。点击下方按钮生成。</view>
 
-      <view class="btn-row" style="margin-top: 20rpx">
-        <button wx:if="{{canAnalyze}}" class="btn btn-primary" bindtap="generate" disabled="{{generating || (latestAi && latestAi.dataHash === diagnosis.dataHash)}}">
-          {{generating ? '正在分析 ' + elapsedSeconds + 's' : (latestAi && latestAi.dataHash === diagnosis.dataHash ? '数据无变化' : '生成 AI 报告')}}
-        </button>
-        <button wx:else class="btn btn-outline" bindtap="goSettings">配置 AI 服务</button>
-      </view>
+      <button wx:if="{{canAnalyze}}" class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="generate" disabled="{{generating || (latestAi && latestAi.dataHash === diagnosis.dataHash)}}">
+        {{generating ? '正在分析 ' + elapsedSeconds + 's' : (latestAi && latestAi.dataHash === diagnosis.dataHash ? '数据无变化' : '生成 AI 报告')}}
+      </button>
+      <button wx:else class="btn btn-outline btn-block" style="margin-top: 20rpx" bindtap="goSettings">配置 AI 服务</button>
     </view>
 
     <!-- 历史报告 -->

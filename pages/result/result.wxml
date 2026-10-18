@@ -54,9 +54,9 @@
     </view>
 
     <!-- 操作 -->
-    <view class="btn-row" style="margin-top: 20rpx">
-      <button class="btn btn-primary" bindtap="trainAgain">再来一组</button>
-      <button class="btn btn-outline" bindtap="goHome">返回首页</button>
+    <view class="topic-grid" style="margin-top: 20rpx">
+      <button class="btn topic-btn btn-primary" bindtap="trainAgain">再来一组</button>
+      <button class="btn topic-btn btn-outline" bindtap="goHome">返回首页</button>
     </view>
   </view>
 </view>

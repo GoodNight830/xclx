@@ -137,7 +137,7 @@
     </view>
 
     <view wx:if="{{hasMore}}" class="text-center" style="margin-top: 8rpx">
-      <button class="btn btn-outline" bindtap="loadMore">加载更多（还有 {{filteredDailyLength - visibleDaily.length}} 天）</button>
+      <button class="btn btn-outline btn-block" bindtap="loadMore">加载更多（还有 {{filteredDailyLength - visibleDaily.length}} 天）</button>
     </view>
   </view>
 

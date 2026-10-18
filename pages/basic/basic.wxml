@@ -85,7 +85,7 @@
     <view class="section-title">薄弱点提示</view>
     <view wx:if="{{weakHint}}" class="card">
       <view class="text-sm" style="margin-bottom: 20rpx">{{weakHint}}</view>
-      <button class="btn btn-secondary btn-sm" data-page="weak" bindtap="goTo">查看薄弱点</button>
+      <button class="btn btn-secondary btn-block" data-page="weak" bindtap="goTo">查看薄弱点</button>
     </view>
     <view wx:else class="alert alert-info">暂无薄弱点，系统会持续分析你的错误分布</view>
   </view>
