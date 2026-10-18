@@ -1,15 +1,15 @@
 {
   "pages": [
     "pages/home/home",
+    "pages/ai/ai",
+    "pages/profile/profile",
+    "pages/settings/settings",
     "pages/basic/basic",
     "pages/training/training",
     "pages/result/result",
     "pages/wrong/wrong",
     "pages/weak/weak",
     "pages/diagnosis/diagnosis",
-    "pages/ai/ai",
-    "pages/profile/profile",
-    "pages/settings/settings",
     "pages/coming-soon/coming-soon"
   ],
   "window": {
@@ -27,15 +27,27 @@
     "list": [
       {
         "pagePath": "pages/home/home",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "assets/tabbar/home.png",
+        "selectedIconPath": "assets/tabbar/home-on.png"
+      },
+      {
+        "pagePath": "pages/ai/ai",
+        "text": "AI 诊断",
+        "iconPath": "assets/tabbar/ai.png",
+        "selectedIconPath": "assets/tabbar/ai-on.png"
       },
       {
         "pagePath": "pages/profile/profile",
-        "text": "个人数据"
+        "text": "个人数据",
+        "iconPath": "assets/tabbar/data.png",
+        "selectedIconPath": "assets/tabbar/data-on.png"
       },
       {
         "pagePath": "pages/settings/settings",
-        "text": "设置"
+        "text": "设置",
+        "iconPath": "assets/tabbar/settings.png",
+        "selectedIconPath": "assets/tabbar/settings-on.png"
       }
     ]
   },

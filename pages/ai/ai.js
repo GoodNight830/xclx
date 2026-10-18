@@ -1,6 +1,10 @@
 /**
- * AI 解读页：模块切换 + 生成 AI 报告 + 历史报告。
+ * AI 诊断页（Tab 页）：选择模块 → 生成 AI 报告 → 历史报告。
  * 前端直连 AI 服务（deepseek）。
+ *
+ * 说明：本页是 tabBar 页面，wx.switchTab 不允许携带 URL 参数，
+ * 因此外部想指定模块时写在 app.globalData.aiEntryModule 上，本页在
+ * onShow 里读取并清空（onLoad 的参数形式仍兼容，便于将来 navigateTo 复用）。
  */
 const queries = require('../../utils/queries')
 const storage = require('../../utils/storage')
@@ -31,22 +35,42 @@ Page({
   timerHandle: null,
 
   onLoad(options) {
-    const moduleOptions = listAiModules().map((m) => ({ id: m.meta.id, title: m.meta.title, subtitle: m.meta.subtitle }))
-    const fallback = moduleOptions[0] || { id: MODULE_FIVE_DIVIDE_THREE, title: '五除三', subtitle: '' }
-    // 支持从子模块直接进来：/pages/ai/ai?module=xxx 会自动选中该模块
-    const incoming = options.module && moduleOptions.find((m) => m.id === options.module)
-    const current = incoming || fallback
-    this.setData({
-      moduleOptions,
-      selectedModule: current.id,
-      selectedModuleTitle: current.title,
-      selectedModuleSubtitle: current.subtitle || ''
-    })
-    this.load()
+    const options2 = options || {}
+    // 模块清单来自注册表，新增支持 AI 的模块会自动出现在这里
+    this._moduleList = listAiModules().map((m) => ({ id: m.meta.id, title: m.meta.title, subtitle: m.meta.subtitle }))
+    this.setData({ moduleOptions: this._moduleList })
+    this.applyIncomingModule(options2.module)
+  },
+
+  // Tab 页每次切到前台都会触发：读取外部指定的模块并刷新数据。
+  // 正在生成报告时不刷新，避免按钮状态与计时被打断。
+  onShow() {
+    const app = getApp()
+    const wanted = app && app.globalData ? app.globalData.aiEntryModule : ''
+    if (wanted) {
+      app.globalData.aiEntryModule = ''
+      if (wanted !== this.data.selectedModule) {
+        this.applyIncomingModule(wanted)
+        return
+      }
+    }
+    if (!this.data.generating) this.load()
   },
 
   onUnload() {
     if (this.timerHandle) clearInterval(this.timerHandle)
+  },
+
+  // 选中指定模块（无效值回退到第一个可用模块）
+  applyIncomingModule(moduleId) {
+    const fallback = this._moduleList[0] || { id: MODULE_FIVE_DIVIDE_THREE, title: '五除三', subtitle: '' }
+    const incoming = moduleId && this._moduleList.find((m) => m.id === moduleId)
+    const current = incoming || fallback
+    this.setData({
+      selectedModule: current.id,
+      selectedModuleTitle: current.title,
+      selectedModuleSubtitle: current.subtitle || ''
+    })
   },
 
   load() {

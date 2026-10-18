@@ -81,6 +81,8 @@ Page({
   },
 
   goAi() {
-    wx.navigateTo({ url: '/pages/ai/ai?module=' + this.data.selectedModule })
+    const app = getApp()
+    if (app && app.globalData) app.globalData.aiEntryModule = this.data.selectedModule
+    wx.switchTab({ url: '/pages/ai/ai' })
   }
 })

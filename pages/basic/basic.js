@@ -96,11 +96,14 @@ Page({
     this.startModule(key)
   },
 
-  // 子模块的「AI 诊断」入口：只做跳转，由 AI 诊断页自动选中该模块并展示最近的诊断数据
+  // 子模块的「AI 诊断」入口：切到 AI 诊断 Tab 并自动选中该模块、展示最近的诊断数据。
+  // AI 诊断是 tabBar 页面，不能用 navigateTo 传参，改由 globalData 传递目标模块。
   goModuleDiagnosis(e) {
     const key = e.currentTarget.dataset.key
     if (!key) return
-    wx.navigateTo({ url: '/pages/ai/ai?module=' + key })
+    const app = getApp()
+    if (app && app.globalData) app.globalData.aiEntryModule = key
+    wx.switchTab({ url: '/pages/ai/ai' })
   },
 
   startModule(key) {
