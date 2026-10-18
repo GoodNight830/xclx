@@ -1,6 +1,10 @@
 /**
- * 基础计算页：模式总开关 + 快速开始 + 题型网格 + 模块信息 + 薄弱点 + 训练工具。
- * 说明：今日概览统一放在「首页」Tab，这里不再重复渲染同一份数据。
+ * 基础计算页：模式总开关 + 题型网格 + 薄弱点提示 + 训练工具 + 错题重练。
+ *
+ * 说明：
+ * - 「今日概览」统一放在「首页」Tab，这里不重复渲染同一份数据。
+ * - 点题型即直接开练，不再经模块详情页中转；原 five-divide-three / signed-add-sub
+ *   两个详情页的内容已全部被设置页、薄弱点页、能力诊断页覆盖，已下线。
  */
 const queries = require('../../utils/queries')
 const storage = require('../../utils/storage')
@@ -99,16 +103,6 @@ Page({
     } catch (err) {
       wx.showToast({ title: err.message || '开始失败', icon: 'none' })
     }
-  },
-
-  // 次要入口：查看模块详情（配置 / 强化范围 / 错题重练 / AI 入口）
-  goModuleInfo(e) {
-    const page = e.currentTarget.dataset.page
-    const urls = {
-      'five-divide-three': '/pages/five-divide-three/five-divide-three',
-      'signed-add-sub': '/pages/signed-add-sub/signed-add-sub'
-    }
-    if (urls[page]) wx.navigateTo({ url: urls[page] })
   },
 
   // 切换总训练模式（练习 / 竞速），持久化到设置，各题型页直接用该模式

@@ -44,29 +44,6 @@
     <view class="field-hint" style="margin-top: 12rpx">点击已开放题型，直接以「{{modeLabel}}」开始训练（灰色题型即将上线）。</view>
   </view>
 
-  <!-- 模块信息（次要入口） -->
-  <view class="section">
-    <view class="section-title">模块信息</view>
-    <view class="card">
-      <view class="list">
-        <view class="list-item" data-page="five-divide-three" bindtap="goModuleInfo" hover-class="press-light">
-          <view class="list-item-main">
-            <view class="bold">五位数 ÷ 三位数</view>
-            <view class="text-sm text-muted">配置 · 薄弱点强化范围 · 错题重练 · AI 诊断</view>
-          </view>
-          <text class="text-muted">›</text>
-        </view>
-        <view class="list-item" data-page="signed-add-sub" bindtap="goModuleInfo" hover-class="press-light">
-          <view class="list-item-main">
-            <view class="bold">正负运算</view>
-            <view class="text-sm text-muted">配置 · 纯练习模块</view>
-          </view>
-          <text class="text-muted">›</text>
-        </view>
-      </view>
-    </view>
-  </view>
-
   <!-- 薄弱点提示 -->
   <view class="section">
     <view class="section-title">薄弱点提示</view>

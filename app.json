@@ -2,8 +2,6 @@
   "pages": [
     "pages/home/home",
     "pages/basic/basic",
-    "pages/five-divide-three/five-divide-three",
-    "pages/signed-add-sub/signed-add-sub",
     "pages/training/training",
     "pages/result/result",
     "pages/wrong/wrong",
