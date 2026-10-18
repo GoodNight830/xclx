@@ -48,16 +48,31 @@ Page({
 
   allDaily: [],
 
+  _firstShow: true,
+
+  // Tab 页：onLoad 只执行一次，之后切 Tab 只走 onShow
   onLoad(options) {
-    this.loadProfile()
-    const preset = options.module || ''
-    if (preset) this.presetModule = preset
-    this.loadHistory()
+    // 预留：将来若有入口需要直接定位到某个模块（options.module）
+    const preset = options && options.module ? options.module : ''
+    if (preset) this.setData({ moduleFilter: preset })
+    this.refresh()
   },
 
+  // 每次切回本 Tab 都重新读一次存储。
+  // 之前这里只刷新了收藏，导致完成训练后统计与训练记录必须重新编译才会更新。
   onShow() {
-    // 收藏可能在结果页变化，刷新收藏
-    this.loadBookmarksOnly()
+    // 首次进入紧跟着 onLoad 执行，那次已经加载过了，不必重复读取
+    if (this._firstShow) {
+      this._firstShow = false
+      return
+    }
+    this.refresh()
+  },
+
+  // profile 统计依赖 modules 列表，必须先于 loadHistory
+  refresh() {
+    this.loadProfile()
+    this.loadHistory()
   },
 
   moduleLabel(moduleId) {
@@ -113,15 +128,24 @@ Page({
   },
 
   // 用 canvas 2d 绘制饼状图（替代不兼容的 SVG）
-  drawPieChart() {
+  // canvas 位于 wx:else 分支，setData 后节点不一定已经渲染出来，
+  // 取不到时隔一帧重试一次，否则首次进入饼图会是空白的。
+  drawPieChart(retry) {
     if (!this.data.pieHasData || !this.data.pieSegments.length) return
     const query = wx.createSelectorQuery()
     query.select('#pieChart').fields({ node: true, size: true }).exec((res) => {
-      if (!res || !res[0] || !res[0].node) return
+      if (!res || !res[0] || !res[0].node || !res[0].width) {
+        if (!retry) setTimeout(() => this.drawPieChart(true), 60)
+        return
+      }
       const canvas = res[0].node
       const ctx = canvas.getContext('2d')
       const dpr = wx.getSystemInfoSync().pixelRatio || 2
       const size = res[0].width
+      if (!size) {
+        if (!retry) setTimeout(() => this.drawPieChart(true), 60)
+        return
+      }
       canvas.width = size * dpr
       canvas.height = size * dpr
       ctx.scale(dpr, dpr)
@@ -158,7 +182,7 @@ Page({
   },
 
   loadHistory() {
-    const module = this.data.moduleFilter || this.presetModule || 'five-divide-three'
+    const module = this.data.moduleFilter || 'five-divide-three'
     const history = queries.loadHistory(this.data.range, module)
 
     this.allDaily = history.daily
