@@ -140,7 +140,12 @@ function extractJson(text) {
     if (salvaged) {
       try {
         return JSON.parse(salvaged)
-      } catch (e) { /* 换下一个候选继续试 */ }
+      } catch (e) {
+        // 二次机会：容忍尾逗号（{"a":1,} / [1,2,] 是模型最常见的语法毛病）
+        try {
+          return JSON.parse(salvaged.replace(/,\s*([}\]])/g, '$1'))
+        } catch (e2) { /* 换下一个候选继续试 */ }
+      }
     }
   }
   const err = new Error('AI 返回的 JSON 不完整或格式有误')
@@ -319,13 +324,21 @@ async function fetchModelList(settings) {
 
 function validateAiReport(raw, diagnosis) {
   if (!raw || typeof raw !== 'object') throw new Error('AI 返回格式不是对象')
-  const value = raw
+  let value = raw
+  // 部分模型会把报告包一层：{"report": {...}} —— 解包后再校验
+  if (!value.summary && value.report && typeof value.report === 'object') {
+    value = value.report
+  }
   if (typeof value.summary !== 'string' || !value.summary.trim()) {
     throw new Error('AI 返回缺少 summary；实际字段：' + (Object.keys(value).join(', ') || '无'))
   }
-  if (!Array.isArray(value.findings) || !Array.isArray(value.nextPlan) || !Array.isArray(value.uncertainty)) {
-    throw new Error('AI 返回结构不完整')
+  // findings 是核心字段，缺失不可原谅；nextPlan / uncertainty 是附属字段，
+  // 缺失时降级为空数组即可，不必整份报告作废
+  if (!Array.isArray(value.findings)) {
+    throw new Error('AI 返回缺少 findings 数组；实际字段：' + (Object.keys(value).join(', ') || '无'))
   }
+  if (!Array.isArray(value.nextPlan)) value.nextPlan = []
+  if (!Array.isArray(value.uncertainty)) value.uncertainty = []
   const allText = JSON.stringify(raw)
   const hadUnsafeLanguage = FORBIDDEN.some((word) => allText.includes(word))
   const rangeMap = new Map(diagnosis.ranges.map((r) => [r.rangeMin + '-' + r.rangeMax, r]))
@@ -445,10 +458,13 @@ async function requestAiReport(settings, diagnosis) {
   // 思考型模型（如 deepseek-flash）会先消耗大量 token 做推理，
   // 重试时必须给到足够大的上限，否则两次都会在思考阶段就被截断
   const retryMaxTokens = Math.min(8000, Math.max(effectiveMaxTokens * 3, 4000))
-  let lastError = null
+  // 逐次记录失败原因：最终报错必须能说明「模型到底返回了什么」，
+  // 否则只能永远盲猜（历史上这个问题被误判过三次：URL、模型名、数据量）
+  const attemptNotes = []
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
     const maxTokens = attempt === 0 ? effectiveMaxTokens : retryMaxTokens
+    const label = '第' + (attempt + 1) + '次（上限 ' + maxTokens + ' tokens）'
     const conciseInstruction = attempt === 0 ? '' : '\n上一次输出不完整。请跳过任何思考过程的复述，直接输出 JSON，每项文字只写一句话，确保完整闭合。'
     const requestBody = {
       model: settings.model,
@@ -473,6 +489,7 @@ async function requestAiReport(settings, diagnosis) {
       }
       if (!content || !String(content).trim()) {
         const truncated = finishReason === 'length'
+        attemptNotes.push(label + (truncated ? '输出被 max_tokens 截断' : '返回内容为空（finish_reason=' + (finishReason || '未知') + '）'))
         lastError = new Error(truncated
           ? 'AI 的思考/输出超出了 max_tokens（本次上限 ' + maxTokens + '）被截断'
           : 'AI 服务没有返回报告内容')
@@ -483,15 +500,24 @@ async function requestAiReport(settings, diagnosis) {
           return validateAiReport(extractJson(content), diagnosis)
         } catch (e) {
           lastError = e
+          // 无论是否可重试，都把「模型实际返回了什么」记下来，最终展示给用户
+          attemptNotes.push(label + (e.message || '解析失败') + '；返回开头：' + previewText(content))
           if (!isJsonParseFailure(e)) throw e
         }
       }
     } catch (e) {
       lastError = e
+      attemptNotes.push(label + (e.message || '请求失败'))
       if (!isJsonParseFailure(e)) throw e
     }
   }
-  throw new Error('AI 连续两次没有返回可用的 JSON。可在「设置 → AI 解读 → 最大输出量」调高上限后重试；若多次失败，建议换用非思考型模型（如 deepseek-chat 系列）')
+  throw new Error('AI 连续两次没有返回可用的 JSON。\n' + attemptNotes.join('\n') + '\n—— 多数情况是模型不兼容：请到「设置 → AI 解读」换用非思考型模型（如 deepseek-chat 系列）后重试')
+}
+
+/** 取文本开头若干字符做诊断展示（压成一行，避免弹窗里刷屏） */
+function previewText(text) {
+  const oneLine = String(text == null ? '' : text).replace(/[\r\n\t]+/g, ' ').trim()
+  return oneLine.length > 60 ? oneLine.slice(0, 60) + '…' : oneLine
 }
 
 function isJsonParseFailure(error) {
