@@ -14,7 +14,9 @@ const CHAT_PATH = '/chat/completions'
  * 直接选一个即可自动填好地址与模型名。
  */
 const PROVIDERS = [
-  { key: 'deepseek', label: 'DeepSeek', baseUrl: 'https://api.deepseek.com', model: 'deepseek-chat' },
+  // DeepSeek 官方接口已不支持旧模型名（deepseek-chat 会报 400），
+  // 以服务端 2026-10 返回的可用列表为准：deepseek-flash / deepseek-v4-pro
+  { key: 'deepseek', label: 'DeepSeek', baseUrl: 'https://api.deepseek.com', model: 'deepseek-flash' },
   { key: 'glm', label: '智谱 GLM', baseUrl: 'https://open.bigmodel.cn/api/paas/v4', model: 'glm-4-flash' },
   { key: 'moonshot', label: 'Moonshot', baseUrl: 'https://api.moonshot.cn/v1', model: 'moonshot-v1-8k' },
   { key: 'openai', label: 'OpenAI', baseUrl: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },

@@ -134,6 +134,27 @@ function assertString(value, field) {
 }
 
 // 用 wx.request 封装请求
+
+/** 把常见 HTTP 错误翻译成能直接操作的提示，而不是甩一段英文原文 */
+function friendlyHttpError(statusCode, detail) {
+  const text = detail || ''
+  // 模型名填错：服务端会返回 "The supported API model names are a, b, but you passed x."
+  const m = /supported API model names are ([^.]+?)\.?\s*(?:\(request_id|$)/i.exec(text)
+  if (statusCode === 400 && m) {
+    return '模型名称不被该接口支持（可用：' + m[1].trim() + '）。\n请到「设置 → AI 解读 → 模型名称」修改，或点上方服务商预设自动填好。'
+  }
+  if (statusCode === 401) {
+    return 'API Key 无效或已过期（401）。请到「设置 → AI 解读」检查密钥是否填写正确。'
+  }
+  if (statusCode === 402) {
+    return '账户余额不足（402），请到服务商控制台充值后重试。'
+  }
+  if (statusCode === 429) {
+    return '请求太频繁或额度受限（429），请稍后再试。'
+  }
+  return 'AI 服务请求失败（' + statusCode + '）' + (text ? '：' + text : '')
+}
+
 function wxRequest(options) {
   return new Promise((resolve, reject) => {
     wx.request({
@@ -153,7 +174,7 @@ function wxRequest(options) {
               detail = typeof parsed.error === 'string' ? parsed.error : (parsed.error && parsed.error.message) || parsed.message || parsed.code || ''
             }
           } catch (e) { /* ignore */ }
-          reject(new Error('AI 服务请求失败（' + res.statusCode + '）' + (detail ? '：' + detail : '')))
+          reject(new Error(friendlyHttpError(res.statusCode, detail)))
         }
       },
       fail(err) {
@@ -310,7 +331,7 @@ function validateAiReport(raw, diagnosis) {
 
 async function requestAiReport(settings, diagnosis) {
   if (!settings.baseUrl) throw new Error('还没填写接口地址，请在「设置 - AI 解读」里填写')
-  if (!settings.model) throw new Error('还没填写模型名称，例如 deepseek-chat')
+  if (!settings.model) throw new Error('还没填写模型名称，例如 deepseek-flash')
   if (!settings.enabled) throw new Error('AI 解读当前是关闭状态')
   if (['openai', 'fastaitoken', 'custom'].includes((settings.model || '').trim().toLowerCase())) throw new Error('模型名称填写的是服务商名称')
   if (!settings.consentToUpload) throw new Error('请先同意发送聚合统计')

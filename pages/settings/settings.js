@@ -103,7 +103,9 @@ Page({
     const patch = { aiProvider: key, aiUrlError: '' }
     if (key !== 'custom') {
       patch.aiBaseUrl = provider.baseUrl
-      if (!this.data.aiModel) patch.aiModel = provider.model
+      // 预设的意义就是「地址+模型一起填对」：覆盖旧值（旧值可能是过时/写错的模型名）。
+      // 选完仍可手动改，提示语里已说明。
+      patch.aiModel = provider.model
     }
     this.setData(patch, () => this.refreshEndpoint())
   },
@@ -209,7 +211,7 @@ Page({
         model: this.data.aiModel,
         consentToUpload: true
       }
-      if (!testSettings.model) throw new Error('请先填写模型名称，例如 deepseek-chat')
+      if (!testSettings.model) throw new Error('请先填写模型名称，例如 deepseek-flash')
       await testAiConnection(testSettings)
       wx.showToast({ title: '连接成功', icon: 'success' })
     } catch (err) {

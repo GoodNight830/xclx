@@ -43,7 +43,9 @@
   box-sizing: border-box;
   background: #ffffff;
   border-radius: 20rpx;
-  padding: 0 28rpx;
+  /* 上下必须留内边距：否则卡片里最后一个按钮直接贴住底部圆角，
+   * 视觉上像「顶出框」（此前 测试连接 / 清空所有训练数据 就是这个情况） */
+  padding: 6rpx 28rpx 24rpx;
   box-shadow: 0 4rpx 16rpx rgba(31, 36, 48, 0.05);
   overflow: hidden;
 }
@@ -150,6 +152,13 @@
   color: #b6bcc9;
   font-size: 28rpx;
 }
+/* 表单项下方的轻量说明文字（不带分隔线，区别于 .st-hint） */
+.st-field-hint {
+  font-size: 22rpx;
+  color: #8a93a6;
+  line-height: 1.6;
+  margin-top: 10rpx;
+}
 
 /* ---------- 服务商预设 ---------- */
 .st-chips {
@@ -221,6 +230,9 @@
 .st-count-box {
   display: flex;
   flex-wrap: wrap;
+  /* 左右对称外扩，抵消每个单元格的 margin-right，
+   * 否则分隔线只向右多出 16rpx、左侧不齐（视觉上像歪出框） */
+  margin-left: -16rpx;
   margin-right: -16rpx;
   padding: 28rpx 0 8rpx;
   border-bottom: 2rpx solid #f0f2f7;
