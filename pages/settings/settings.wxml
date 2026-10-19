@@ -130,19 +130,35 @@
 
         <view class="st-field">
           <view class="st-field-label">API Key</view>
-          <input class="st-input" value="{{aiApiKey}}" bindinput="onAiApiKeyInput" password placeholder="sk-..." placeholder-class="st-placeholder" />
+          <input class="st-input" value="{{aiApiKey}}" bindinput="onAiApiKeyInput" bindblur="onAiApiKeyBlur" password placeholder="sk-..." placeholder-class="st-placeholder" />
+          <view class="st-field-hint">填完 Key 后会自动拉取可用模型（也可以手动点下方「拉取模型」）。</view>
         </view>
 
         <view class="st-field">
           <view class="st-field-label">模型名称</view>
-          <input class="st-input" value="{{aiModel}}" bindinput="onAiModelInput" placeholder="deepseek-flash" placeholder-class="st-placeholder" />
-          <view class="st-field-hint">DeepSeek 常用：deepseek-flash（快速）· deepseek-v4-pro（更强）。模型名填错会报 400，点上方服务商预设可自动填对。</view>
+          <view class="st-input-row">
+            <input class="st-input st-input-grow" value="{{aiModel}}" bindinput="onAiModelInput" placeholder="deepseek-flash" placeholder-class="st-placeholder" />
+            <view class="st-fetch {{modelLoading ? 'st-fetch-busy' : ''}}" hover-class="st-fetch-hover" bindtap="loadModels">
+              {{modelLoading ? '拉取中…' : '拉取模型'}}
+            </view>
+          </view>
+
+          <picker wx:if="{{modelList.length}}" range="{{modelList}}" value="{{modelIndex}}" bindchange="pickModel">
+            <view class="st-select" hover-class="st-select-hover">
+              <view class="st-select-text">{{aiModel ? aiModel : '点此选择模型'}}</view>
+              <text class="st-arrow"></text>
+            </view>
+          </picker>
+
+          <view class="st-field-hint">
+            {{modelList.length ? '共 ' + modelList.length + ' 个可用模型，点上方一栏可直接切换。' : '先填 API Key，再点「拉取模型」，会自动列出该 Key 可用的全部模型，不用手填。'}}
+          </view>
         </view>
 
         <view class="st-row" hover-class="st-row-hover">
           <view>
             <view class="st-row-label">同意发送聚合统计</view>
-            <view class="st-row-sub">仅发送聚合数据，不发送逐题答案</view>
+            <view class="st-row-sub">仅发送聚合数据，不发送逐题答案（AI 诊断必须先打开）</view>
           </view>
           <switch checked="{{aiConsent}}" bindchange="onAiConsentChange" color="#2f9e6b" />
         </view>
@@ -196,6 +212,6 @@
     保存设置
   </view>
 
-  <view class="st-footnote">修改后需点击「保存设置」才会生效。</view>
+  <view class="st-footnote">{{savedHint || '修改会自动保存，无需手动点击'}}</view>
 
 </view>

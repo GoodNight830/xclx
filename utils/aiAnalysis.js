@@ -222,6 +222,57 @@ async function performJsonRequest(settings, requestBody, timeoutMs) {
   throw lastError || new Error('AI 服务请求失败')
 }
 
+/**
+ * 拉取服务商可用的模型列表（OpenAI 兼容的 GET /models 接口）。
+ *
+ * 目的：让用户「点选」模型而不是手填——模型名写错（如填 ds）会直接 400，
+ * 而官方模型名还会随时间下线/新增（deepseek-chat 就是这么失效的）。
+ *
+ * @returns {Promise<string[]>} 模型名数组（已去重、按名称排序）
+ */
+async function fetchModelList(settings) {
+  const apiKey = cleanApiKey(settings.apiKey)
+  if (!apiKey) throw new Error('请先填写 API Key，再拉取模型列表')
+  let base = ''
+  try {
+    base = validateBaseUrl(settings.baseUrl, { allowHttp: true })
+  } catch (e) {
+    throw new Error('接口地址无效，无法拉取模型列表：' + e.message)
+  }
+  // /models 与 /chat/completions 同级：base 形如 https://api.deepseek.com 或 .../v1
+  const normalized = base.replace(/\/+$/, '')
+  const candidates = [normalized + '/models']
+  // 有些服务商（如自定义网关）要求显式带 /v1
+  if (!/\/v\d+$/.test(normalized)) candidates.push(normalized + '/v1/models')
+
+  let lastError = null
+  for (const url of candidates) {
+    try {
+      const res = await wxRequest({
+        url,
+        method: 'GET',
+        header: { ...(apiKey ? { Authorization: 'Bearer ' + apiKey } : {}) },
+        timeout: 20000
+      })
+      // 兼容三种返回形态：裸数组 / { data: [...] }（OpenAI 标准）/ { models: [...] }
+      const body = res || {}
+      const list = Array.isArray(body) ? body : Array.isArray(body.data) ? body.data : Array.isArray(body.models) ? body.models : []
+      const ids = list
+        .map((m) => (typeof m === 'string' ? m : m && (m.id || m.model_id || m.name)))
+        .filter((x) => typeof x === 'string' && x.trim())
+      if (ids.length) {
+        const unique = []
+        ids.forEach((id) => { if (unique.indexOf(id) === -1) unique.push(id) })
+        return unique.sort()
+      }
+      lastError = new Error('接口返回的模型列表为空')
+    } catch (e) {
+      lastError = e
+    }
+  }
+  throw lastError || new Error('未能获取模型列表')
+}
+
 function validateAiReport(raw, diagnosis) {
   if (!raw || typeof raw !== 'object') throw new Error('AI 返回格式不是对象')
   const value = raw
@@ -394,4 +445,4 @@ async function testAiConnection(settings) {
   await performJsonRequest(settings, body, 20000)
 }
 
-module.exports = { PROMPT_VERSION, formatAiReportText, requestAiReport, testAiConnection, validateAiReport }
+module.exports = { PROMPT_VERSION, formatAiReportText, requestAiReport, testAiConnection, fetchModelList, validateAiReport }

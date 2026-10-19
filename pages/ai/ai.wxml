@@ -85,7 +85,8 @@
       <button wx:if="{{canAnalyze}}" class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="generate" disabled="{{generating || (latestAi && latestAi.dataHash === diagnosis.dataHash)}}">
         {{generating ? '正在分析 ' + elapsedSeconds + 's' : (latestAi && latestAi.dataHash === diagnosis.dataHash ? '数据无变化' : '生成 AI 诊断')}}
       </button>
-      <button wx:else class="btn btn-outline btn-block" style="margin-top: 20rpx" bindtap="goSettings">配置 AI 服务</button>
+      <button wx:else class="btn btn-outline btn-block" style="margin-top: 20rpx" bindtap="goSettings">去设置里配置</button>
+      <view wx:if="{{blockReason}}" class="text-sm text-muted" style="margin-top: 12rpx">{{blockReason}}</view>
     </view>
 
     <!-- 历史报告 -->

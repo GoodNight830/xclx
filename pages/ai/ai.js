@@ -29,7 +29,9 @@ Page({
     errorText: '',
     aiDetailExpanded: false,
     historyExpanded: false,
-    hasData: false
+    hasData: false,
+    // 不能生成诊断时的具体原因（缺哪一项配置）
+    blockReason: ''
   },
 
   timerHandle: null,
@@ -76,11 +78,19 @@ Page({
   load() {
     const settings = storage.settingsRepo.getSettings()
     const bundle = queries.loadDiagnosis(this.data.selectedModule)
+    // 逐项检查配置，把「为什么还不能诊断」直接说清楚。
+    // 之前只给一个「配置 AI 服务」按钮，用户不知道是开关没开、同意没勾还是模型没填。
+    let blockReason = ''
+    if (!settings.ai.enabled) blockReason = '未启用 AI 解读：请到「设置 → AI 解读」打开开关'
+    else if (!settings.ai.apiKey) blockReason = '未填写 API Key：请到「设置 → AI 解读」填写'
+    else if (!settings.ai.model) blockReason = '未选择模型：请到「设置 → AI 解读」点「拉取模型」后选择'
+    else if (!settings.ai.consentToUpload) blockReason = '未同意发送聚合统计：请到「设置 → AI 解读」打开该开关'
     this.setData({
       diagnosis: bundle.diagnosis,
       latestAi: bundle.latestAi,
       aiHistory: bundle.aiHistory,
-      canAnalyze: settings.ai.enabled && settings.ai.consentToUpload && Boolean(settings.ai.model),
+      canAnalyze: !blockReason,
+      blockReason,
       hasData: bundle.diagnosis.lifetime.sampleCount > 0
     })
   },
