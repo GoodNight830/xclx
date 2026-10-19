@@ -8,6 +8,8 @@
  * 生产环境建议改用云函数中转，避免 Key 暴露。
  */
 
+const { validateBaseUrl, chatEndpoint, isDeepSeekHost, normalizeBaseUrl, hostnameOf } = require('./aiUrl')
+
 const PROMPT_VERSION = 'diagnosis-v1'
 const FORBIDDEN = ['肯定', '一定', '绝对', '完全掌握', '绝对没问题', '你就是粗心', '非常优秀', '天赋']
 const UNSAFE_REPLACEMENTS = [
@@ -79,16 +81,13 @@ function formatAiReportText(value) {
   return sanitizeReportText(localizeReportText(value))
 }
 
+/**
+ * 接口地址清洗。
+ * 注意：小程序逻辑层没有 URL 这个浏览器对象，绝不能用 new URL()，
+ * 统一走 utils/aiUrl.js 的纯字符串实现，否则会报「地址无效 / URL 不正确」。
+ */
 function cleanBaseUrl(value) {
-  const trimmed = (value || '').trim()
-  const markdownUrl = trimmed.match(/\]\((https?:\/\/[^)]+)\)/i)
-  const plainUrl = trimmed.match(/https?:\/\/[^\s\])]+/i)
-  const cleaned = (markdownUrl ? markdownUrl[1] : plainUrl ? plainUrl[0] : trimmed).replace(/\/$/, '')
-  try {
-    return new URL(cleaned).toString().replace(/\/$/, '')
-  } catch (e) {
-    throw new Error('接口地址格式无效，请只填写完整的 http:// 或 https:// 地址')
-  }
+  return validateBaseUrl(value)
 }
 
 function cleanApiKey(value) {
@@ -105,13 +104,11 @@ function cleanApiKey(value) {
 }
 
 function isDeepSeek(settings) {
-  const hostname = new URL(cleanBaseUrl(settings.baseUrl)).hostname
-  return /(^|\.)deepseek\.com$/i.test(hostname) || (settings.provider || '').toLowerCase() === 'deepseek'
+  return isDeepSeekHost(settings.baseUrl, settings.provider)
 }
 
 function endpoints(baseUrl) {
-  const base = cleanBaseUrl(baseUrl)
-  return [base.endsWith('/chat/completions') ? base : base + '/chat/completions']
+  return [chatEndpoint(baseUrl)]
 }
 
 function systemPrompt() {
@@ -161,11 +158,21 @@ function wxRequest(options) {
       },
       fail(err) {
         const msg = (err && err.errMsg) || ''
-        if (msg.indexOf('timeout') !== -1) {
-          reject(new Error('连接超时，请检查网络或接口地址是否正确'))
-        } else {
-          reject(new Error('无法连接接口：' + (msg || '网络错误')))
+        const host = hostnameOf(options.url)
+        // 微信对不同失败原因给的 errMsg 不一样，分别翻译成人能看懂的提示
+        if (/not in domain|不在以下|合法域名/i.test(msg)) {
+          reject(new Error('域名 ' + host + ' 未加入小程序后台的「request 合法域名」。\n开发工具可勾选“不校验合法域名”先调试，正式版需在 mp.weixin.qq.com 配置。'))
+          return
         }
+        if (/invalid url|malformed|非法|url.*不正确/i.test(msg)) {
+          reject(new Error('接口地址不被小程序接受：' + options.url + '\n请检查是否带端口、空格或多余路径。'))
+          return
+        }
+        if (/timeout/i.test(msg)) {
+          reject(new Error('连接超时（' + host + '），请检查网络，或在小程序后台把该域名加入白名单。'))
+          return
+        }
+        reject(new Error('无法连接 ' + host + '：' + (msg || '网络错误')))
       }
     })
   })
@@ -302,7 +309,9 @@ function validateAiReport(raw, diagnosis) {
 }
 
 async function requestAiReport(settings, diagnosis) {
-  if (!settings.enabled || !settings.model || !settings.baseUrl) throw new Error('请先完成 AI 服务配置')
+  if (!settings.baseUrl) throw new Error('还没填写接口地址，请在「设置 - AI 解读」里填写')
+  if (!settings.model) throw new Error('还没填写模型名称，例如 deepseek-chat')
+  if (!settings.enabled) throw new Error('AI 解读当前是关闭状态')
   if (['openai', 'fastaitoken', 'custom'].includes((settings.model || '').trim().toLowerCase())) throw new Error('模型名称填写的是服务商名称')
   if (!settings.consentToUpload) throw new Error('请先同意发送聚合统计')
 

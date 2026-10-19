@@ -10,6 +10,8 @@
  */
 
 const { STORAGE_PREFIX } = require('./config')
+// 地址清洗统一复用 utils/aiUrl（小程序逻辑层没有 URL 对象，不能用 new URL）
+const { normalizeBaseUrl, hostnameOf: safeHostname } = require('./aiUrl')
 
 // 表名 -> 存储 key
 const TABLES = {
@@ -245,17 +247,6 @@ const SETTINGS_KEY = 'app-settings'
 function clamp(value, min, max, fallback) {
   if (!Number.isFinite(value)) return fallback
   return Math.min(max, Math.max(min, value))
-}
-
-function normalizeBaseUrl(value) {
-  const trimmed = (value || '').trim()
-  const markdownUrl = trimmed.match(/\]\((https?:\/\/[^)]+)\)/i)
-  const plainUrl = trimmed.match(/https?:\/\/[^\s\])]+/i)
-  return (markdownUrl ? markdownUrl[1] : plainUrl ? plainUrl[0] : trimmed).replace(/\/$/, '')
-}
-
-function safeHostname(value) {
-  try { return new URL(value).hostname } catch (e) { return '' }
 }
 
 function normalizeSettings(input) {

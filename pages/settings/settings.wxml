@@ -102,9 +102,30 @@
       </view>
 
       <block wx:if="{{aiEnabled}}">
+        <!-- 服务商预设：手填地址最容易写错，选一个即可自动填好地址与模型 -->
+        <view class="st-field">
+          <view class="st-field-label">服务商</view>
+          <view class="st-chips">
+            <view
+              wx:for="{{providers}}"
+              wx:key="key"
+              class="st-chip {{item.key === aiProvider ? 'st-chip-on' : ''}}"
+              data-key="{{item.key}}"
+              bindtap="pickProvider"
+              hover-class="st-chip-hover"
+            >{{item.label}}</view>
+          </view>
+          <view class="st-hint">选好后仍可自行修改下面的地址和模型。</view>
+        </view>
+
         <view class="st-field">
           <view class="st-field-label">接口地址</view>
           <input class="st-input" value="{{aiBaseUrl}}" bindinput="onAiBaseUrlInput" placeholder="https://api.deepseek.com" placeholder-class="st-placeholder" />
+          <view class="st-endpoint">
+            <view class="st-endpoint-label">实际请求地址</view>
+            <view class="st-endpoint-url">{{aiEndpoint || '（请先填写接口地址）'}}</view>
+          </view>
+          <view wx:if="{{aiUrlError}}" class="st-hint" style="color: #ef4444">{{aiUrlError}}</view>
         </view>
 
         <view class="st-field">
