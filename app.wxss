@@ -129,9 +129,11 @@ page {
   align-items: center;
   flex-wrap: wrap;
 }
-.row > view,
-.row > text,
-.row > button {
+/* WXSS 对子代选择器（>）支持不稳定，这里用等价的后代选择器（这些元素的
+ * 子元素本身就是直接子元素，效果一致） */
+.row view,
+.row text,
+.row button {
   margin-right: 12rpx;
   margin-bottom: 6rpx;
 }
@@ -160,8 +162,8 @@ page {
   flex: 1;
   min-width: 0;
 }
-.list-item-main > view,
-.list-item-main > text {
+.list-item-main view,
+.list-item-main text {
   margin-bottom: 6rpx;
 }
 .list-item-meta {

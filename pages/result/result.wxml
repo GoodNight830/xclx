@@ -34,18 +34,20 @@
       <view class="section-title">逐题回顾</view>
       <view class="card">
         <view class="list">
-          <view wx:for="{{records}}" wx:key="id" class="list-item">
+          <view wx:for="{{records}}" wx:key="id" class="list-item record-item">
             <view class="list-item-main">
-              <view class="row">
-                <text class="text-xs text-muted">{{index + 1}}.</text>
-                <text class="question-text" style="font-size: 28rpx">{{item.question}}</text>
-                <text class="{{item.correct ? 'text-success bold' : 'text-danger bold'}}">{{item.correct ? '✓' : '✕'}}</text>
+              <view class="record-head">
+                <text class="record-index">{{index + 1}}.</text>
+                <text class="record-question">{{item.question}}</text>
+                <text class="record-mark {{item.correct ? 'record-mark-ok' : 'record-mark-bad'}}">{{item.correct ? '✓' : '✕'}}</text>
               </view>
-              <view wx:if="{{!item.correct}}" class="list-item-meta mono">
-                答案 {{item.userAnswer !== null && item.userAnswer !== undefined ? item.userAnswer : '—'}} → {{item.correctAnswer}}
+
+              <view class="record-meta">
+                <text class="record-meta-item">你的答案 <text class="mono {{item.correct ? '' : 'text-danger'}}">{{item.userAnswerLabel}}</text></text>
+                <text wx:if="{{!item.correct}}" class="record-meta-item">正确答案 <text class="mono text-success">{{item.correctAnswerLabel}}</text></text>
               </view>
             </view>
-            <button class="btn btn-ghost btn-sm" data-index="{{index}}" bindtap="toggleBookmark">
+            <button class="btn btn-ghost btn-sm record-star" data-index="{{index}}" bindtap="toggleBookmark">
               {{bookmarkStates[item.id] ? '★' : '☆'}}
             </button>
           </view>

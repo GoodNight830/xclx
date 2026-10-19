@@ -41,12 +41,26 @@ Page({
       return
     }
     this.active = active
+    this._finished = false
+    // 拦截返回（左上角返回键 / 侧滑）：放弃训练需二次确认。
+    // 原「结束训练」按钮已移除——用户要提前离开就走这里。
+    try {
+      wx.enableAlertBeforeUnload({
+        message: '训练还未完成，确定要放弃吗？已作答的题目不会计入统计。'
+      })
+    } catch (e) { /* 基础库过低时忽略，返回不拦截 */ }
     this.initFromActive()
     this.startQuestion()
   },
 
   onUnload() {
     this.stopTimer()
+    // 非正常完成（中途返回且确认放弃）→ 丢弃本次作答，不计入统计
+    if (this.active && !this._finished) {
+      training.abandonSession(this.active)
+      this.active = null
+    }
+    try { wx.disableAlertBeforeUnload() } catch (e) { /* ignore */ }
   },
 
   initFromActive() {
@@ -135,6 +149,9 @@ Page({
       this.active = result.active
 
       if (result.isComplete) {
+        // 正常完成：关闭返回拦截，避免跳结算页时误弹「放弃训练」
+        this._finished = true
+        try { wx.disableAlertBeforeUnload() } catch (e) { /* ignore */ }
         const finished = training.finishSession(result.active)
         // 触发薄弱点重算（仅五除三）
         if (finished.module === 'five-divide-three') {
@@ -180,32 +197,41 @@ Page({
     this.startQuestion()
   },
 
-  // 重开本题
-  restartQuestion() {
-    this.setData({ input: '' })
-    this.startQuestion()
-  },
-
-  // 结束训练
-  endTraining() {
+  /**
+   * 重开：放弃当前这组题目，重新开一组（同模块 / 同模式 / 同题量）。
+   * 旧的那组不计入统计，所以先确认一次。
+   */
+  restartSession() {
     if (!this.active) return
     wx.showModal({
-      title: '结束训练',
-      content: '确定要结束本次训练吗？已作答的题目会计入统计。',
-      confirmText: '结束',
-      cancelText: '继续练',
+      title: '重开一组',
+      content: '当前这组题目会被放弃（不计入统计），确定重新开一组吗？',
+      confirmText: '重开',
+      cancelText: '取消',
       success: (res) => {
-        if (!res.confirm) return
-        if (this.active.answers.length === 0) {
-          training.abandonSession(this.active)
-          wx.navigateBack()
-        } else {
-          const finished = training.finishSession(this.active)
-          if (finished.module === 'five-divide-three') {
-            const cfg = storage.settingsRepo.getSettings()
-            training.recomputeWeakPatterns('five-divide-three', cfg.weakPattern)
-          }
-          wx.redirectTo({ url: '/pages/result/result?sessionId=' + finished.id })
+        if (!res.confirm || !this.active) return
+        try {
+          const prev = this.active
+          const settings = storage.settingsRepo.getSettings()
+          const weakPatterns = prev.module === 'five-divide-three'
+            ? storage.weakPatternsRepo.listWeakPatterns('five-divide-three')
+            : []
+          // 先放弃旧的，再开新的（同一时刻只应存在一个进行中的会话）
+          training.abandonSession(prev)
+          this.active = training.beginSession({
+            module: prev.module,
+            mode: prev.mode,
+            questionCount: prev.questionCount,
+            allowedErrorRate: prev.allowedErrorRate !== undefined ? prev.allowedErrorRate : settings.defaultAllowedErrorRate,
+            weakPatterns,
+            weakConfig: settings.weakPattern
+          })
+          this.setData({ input: '', feedback: null, awaitingContinue: false })
+          this.initFromActive()
+          this.startQuestion()
+          wx.showToast({ title: '已重新开一组', icon: 'none' })
+        } catch (err) {
+          wx.showToast({ title: err.message || '重开失败', icon: 'none' })
         }
       }
     })

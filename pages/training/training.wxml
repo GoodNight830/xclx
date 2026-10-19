@@ -1,12 +1,11 @@
 <view class="page training-page">
-  <!-- 顶部：进度 + 结束按钮 -->
+  <!-- 顶部：进度（提前离开用系统返回键，会提示是否放弃） -->
   <view class="training-header">
     <view class="text-sm text-muted">
       <text class="bold">{{moduleTitle}}</text>
       <text wx:if="{{isSpeed}}"> · 第 {{displayIndex}}/{{questionCount}} 题</text>
       <text wx:else> · 第 {{displayIndex}} 题</text>
     </view>
-    <button class="btn btn-ghost btn-sm end-btn" bindtap="endTraining">✕ 结束训练</button>
   </view>
 
   <!-- 题目 + 答案：居中成组，答案直接跟在算式下面 -->
@@ -38,7 +37,7 @@
   <!-- 数字键盘（3 列布局：功能行 + 数字区 + 底行） -->
   <view class="keypad-wrap">
     <view class="keypad">
-      <view class="key key-fn" data-key="restart" hover-class="key-active" bindtap="restartQuestion">重开</view>
+      <view class="key key-fn" hover-class="key-active" bindtap="restartSession">重开</view>
       <view class="key key-fn" data-key="clear" hover-class="key-active" bindtap="onKeyTap">清空</view>
       <view class="key key-fn" data-key="del" hover-class="key-active" bindtap="onKeyTap">退格</view>
       <view class="key" data-key="1" hover-class="key-active" bindtap="onKeyTap">1</view>
