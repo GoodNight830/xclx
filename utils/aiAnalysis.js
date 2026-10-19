@@ -461,6 +461,7 @@ async function requestAiReport(settings, diagnosis) {
   // 逐次记录失败原因：最终报错必须能说明「模型到底返回了什么」，
   // 否则只能永远盲猜（历史上这个问题被误判过三次：URL、模型名、数据量）
   const attemptNotes = []
+  let lastError = null
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
     const maxTokens = attempt === 0 ? effectiveMaxTokens : retryMaxTokens
