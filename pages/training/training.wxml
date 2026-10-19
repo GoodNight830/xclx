@@ -6,18 +6,19 @@
       <text wx:if="{{isSpeed}}"> · 第 {{displayIndex}}/{{questionCount}} 题</text>
       <text wx:else> · 第 {{displayIndex}} 题</text>
     </view>
-    <button class="btn btn-ghost btn-sm" bindtap="endTraining">结束</button>
+    <button class="btn btn-ghost btn-sm end-btn" bindtap="endTraining">✕ 结束训练</button>
   </view>
 
-  <!-- 题目 -->
+  <!-- 题目 + 答案：居中成组，答案直接跟在算式下面 -->
   <view class="question-area">
-    <view class="question-text question-big">{{questionText}}</view>
-  </view>
-
-  <!-- 答案输入框 -->
-  <view class="answer-display {{feedback && !feedback.correct ? 'answer-wrong' : ''}}">
-    <text wx:if="{{input}}">{{input}}</text>
-    <text wx:else class="placeholder">输入答案</text>
+    <view class="question-center">
+      <view class="question-big">{{questionText}}</view>
+      <view class="answer-line {{feedback && !feedback.correct ? 'answer-wrong' : ''}}">
+        <text class="answer-eq">＝</text>
+        <text wx:if="{{input}}" class="answer-value">{{input}}</text>
+        <text wx:else class="answer-cursor">_</text>
+      </view>
+    </view>
   </view>
 
   <!-- 反馈（仅训练模式） -->
