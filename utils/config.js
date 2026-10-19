@@ -78,6 +78,10 @@ const DEFAULT_APP_SETTINGS = {
 /** 导出文件格式版本 */
 const SCHEMA_VERSION = 1
 
+// AI 诊断最少需要的已判定题目数（与薄弱点判定阈值一致）：
+// 样本不足 10 道时任何结论都不可信，UI 层直接拦截并给出友好引导
+const AI_MIN_QUESTIONS = 10
+
 /** 存储 key 前缀 */
 const STORAGE_PREFIX = 'bct'
 
@@ -86,6 +90,9 @@ module.exports = {
   MODULE_SIGNED_ADD_SUB,
   QUESTION_COUNT,
   ALLOWED_ERROR_RATE,
+  // AI 诊断最少需要的已判定题目数（与薄弱点判定阈值一致，源自需求规格 §10.1/PRD §12）：
+  // 样本不足 10 道时任何结论都不可信，直接在 UI 层拦截并给出友好引导
+  AI_MIN_QUESTIONS,
   GRADE_THRESHOLDS_MS,
   DEFAULT_WEAK_PATTERN_CONFIG,
   DEFAULT_AI_SETTINGS,

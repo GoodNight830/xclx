@@ -9,6 +9,7 @@
  */
 
 const { validateBaseUrl, chatEndpoint, isDeepSeekHost, normalizeBaseUrl, hostnameOf } = require('./aiUrl')
+const { AI_MIN_QUESTIONS } = require('./config')
 
 const PROMPT_VERSION = 'diagnosis-v1'
 const FORBIDDEN = ['肯定', '一定', '绝对', '完全掌握', '绝对没问题', '你就是粗心', '非常优秀', '天赋']
@@ -424,6 +425,13 @@ function validateAiReport(raw, diagnosis) {
 }
 
 async function requestAiReport(settings, diagnosis) {
+  // 数据量门槛：样本不足时任何结论都不可信（提示词里也要求 <10 不得判断），
+  // 与其让 AI 硬编一份全是 insufficient_data 的报告，不如直接友好拦截。
+  // 正常情况下 UI 层已提前拦截，这里是最后一道防线。
+  const sampleCount = diagnosis && diagnosis.lifetime ? diagnosis.lifetime.sampleCount : 0
+  if (sampleCount < AI_MIN_QUESTIONS) {
+    throw new Error('训练数据还不够：AI 诊断至少需要 ' + AI_MIN_QUESTIONS + ' 道已判定的题目（当前 ' + sampleCount + ' 题）。完成几组训练后再来。')
+  }
   if (!settings.baseUrl) throw new Error('还没填写接口地址，请在「设置 - AI 解读」里填写')
   if (!settings.model) throw new Error('还没填写模型名称，例如 deepseek-flash')
   if (!settings.enabled) throw new Error('AI 解读当前是关闭状态')

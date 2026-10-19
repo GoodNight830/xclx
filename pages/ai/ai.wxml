@@ -31,7 +31,7 @@
 
   <view wx:if="{{errorText}}" class="alert alert-danger section">{{errorText}}</view>
 
-  <view wx:if="{{!hasData}}" class="empty">还没有「{{selectedModuleTitle}}」的训练数据，完成一组训练后 AI 才能给出诊断。</view>
+  <view wx:if="{{!hasData}}" class="empty">还没有「{{selectedModuleTitle}}」的训练数据。AI 诊断至少需要 {{minQuestions}} 道已判定的题目，完成几组训练后再来。</view>
 
   <view wx:else>
     <!-- 诊断卡片 -->
@@ -82,11 +82,24 @@
 
       <view wx:else class="text-sm text-muted" style="margin-top: 20rpx">尚未生成 AI 诊断报告。点击下方按钮生成。</view>
 
-      <button wx:if="{{canAnalyze}}" class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="generate" disabled="{{generating || (latestAi && latestAi.dataHash === diagnosis.dataHash)}}">
+      <button wx:if="{{canAnalyze && dataReady}}" class="btn btn-primary btn-block" style="margin-top: 20rpx" bindtap="generate" disabled="{{generating || (latestAi && latestAi.dataHash === diagnosis.dataHash)}}">
         {{generating ? '正在分析 ' + elapsedSeconds + 's' : (latestAi && latestAi.dataHash === diagnosis.dataHash ? '数据无变化' : '生成 AI 诊断')}}
       </button>
+
+      <!-- 数据不足：友好引导，不算错误 -->
+      <block wx:elif="{{canAnalyze}}">
+        <view class="alert alert-info" style="margin-top: 20rpx">
+          <view class="bold">数据还不够做 AI 诊断</view>
+          <view class="text-sm" style="margin-top: 8rpx; line-height: 1.6">
+            AI 诊断至少需要 {{minQuestions}} 道已判定的题目，当前 {{currentQuestions}} 题{{missingQuestions > 0 ? '，还差 ' + missingQuestions + ' 题' : ''}}。样本太少时任何结论都不可信，所以先不分析。完成几组训练后回来即可，配置不会丢。
+          </view>
+        </view>
+        <button class="btn btn-secondary btn-block" style="margin-top: 20rpx" bindtap="goTraining">去做几组训练</button>
+      </block>
+
       <button wx:else class="btn btn-outline btn-block" style="margin-top: 20rpx" bindtap="goSettings">去设置里配置</button>
       <view wx:if="{{blockReason}}" class="text-sm text-muted" style="margin-top: 12rpx">{{blockReason}}</view>
+      <view wx:if="{{canAnalyze && dataReady}}" class="field-hint" style="margin-top: 12rpx">AI 诊断最少需要 {{minQuestions}} 道题；数据越多，分析越准。</view>
     </view>
 
     <!-- 历史报告 -->

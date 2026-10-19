@@ -10,7 +10,7 @@ const queries = require('../../utils/queries')
 const storage = require('../../utils/storage')
 const format = require('../../utils/format')
 const { listAiModules } = require('../../utils/registry')
-const { MODULE_FIVE_DIVIDE_THREE } = require('../../utils/config')
+const { MODULE_FIVE_DIVIDE_THREE, AI_MIN_QUESTIONS } = require('../../utils/config')
 const { requestAiReport, testAiConnection, formatAiReportText, PROMPT_VERSION } = require('../../utils/aiAnalysis')
 const { newId } = require('../../utils/id')
 
@@ -31,7 +31,12 @@ Page({
     historyExpanded: false,
     hasData: false,
     // 不能生成诊断时的具体原因（缺哪一项配置）
-    blockReason: ''
+    blockReason: '',
+    // 数据量就绪度：AI 诊断最少需要 AI_MIN_QUESTIONS 道已判定题目
+    dataReady: false,
+    minQuestions: AI_MIN_QUESTIONS,
+    currentQuestions: 0,
+    missingQuestions: 0
   },
 
   timerHandle: null,
@@ -85,13 +90,17 @@ Page({
     else if (!settings.ai.apiKey) blockReason = '未填写 API Key：请到「设置 → AI 解读」填写'
     else if (!settings.ai.model) blockReason = '未选择模型：请到「设置 → AI 解读」点「拉取模型」后选择'
     else if (!settings.ai.consentToUpload) blockReason = '未同意发送聚合统计：请到「设置 → AI 解读」打开该开关'
+    const sampleCount = bundle.diagnosis.lifetime.sampleCount
     this.setData({
       diagnosis: bundle.diagnosis,
       latestAi: bundle.latestAi,
       aiHistory: bundle.aiHistory,
       canAnalyze: !blockReason,
       blockReason,
-      hasData: bundle.diagnosis.lifetime.sampleCount > 0
+      hasData: sampleCount > 0,
+      dataReady: sampleCount >= AI_MIN_QUESTIONS,
+      currentQuestions: sampleCount,
+      missingQuestions: Math.max(0, AI_MIN_QUESTIONS - sampleCount)
     })
   },
 
@@ -120,6 +129,11 @@ Page({
     if (this.data.generating) return
     const diagnosis = this.data.diagnosis
     if (!diagnosis) return
+    // 双保险：UI 已隐藏按钮，这里再拦一次
+    if (!this.data.dataReady) {
+      wx.showToast({ title: '数据不够：至少需要 ' + AI_MIN_QUESTIONS + ' 道题', icon: 'none' })
+      return
+    }
 
     const settings = storage.settingsRepo.getSettings()
     if (this.data.latestAi && this.data.latestAi.dataHash === diagnosis.dataHash) {
@@ -160,5 +174,10 @@ Page({
 
   goSettings() {
     wx.switchTab({ url: '/pages/settings/settings' })
+  },
+
+  /** 数据不足时的引导：跳去基础计算页做题 */
+  goTraining() {
+    wx.navigateTo({ url: '/pages/basic/basic' })
   }
 })
