@@ -28,6 +28,7 @@ Page({
     aiProvider: 'deepseek',
     aiEndpoint: '',
     aiUrlError: '',
+    aiMaxTokens: 2000,
     providers: PROVIDERS,
     testing: false,
     // 模型列表：从服务商 /models 接口拉取，供用户点选
@@ -75,6 +76,7 @@ Page({
       aiApiKey: settings.ai.apiKey,
       aiModel: settings.ai.model,
       aiConsent: settings.ai.consentToUpload,
+      aiMaxTokens: settings.ai.maxOutputTokens,
       aiProvider: this.matchProvider(settings.ai.baseUrl),
       weakEnable: settings.weakPattern.enableReinforcement,
       minSampleCount: settings.weakPattern.minSampleCount,
@@ -115,7 +117,8 @@ Page({
         baseUrl,
         apiKey: this.data.aiApiKey,
         model: this.data.aiModel,
-        consentToUpload: this.data.aiConsent
+        consentToUpload: this.data.aiConsent,
+        maxOutputTokens: this.data.aiMaxTokens
       },
       weakPattern: {
         ...settings.weakPattern,
@@ -244,6 +247,9 @@ Page({
   },
   onAiConsentChange(e) {
     this.setData({ aiConsent: e.detail.value }, () => this.schedulePersist())
+  },
+  onAiMaxTokensChange(e) {
+    this.setData({ aiMaxTokens: Number(e.detail.value) }, () => this.schedulePersist())
   },
 
   // ---------- 模型列表 ----------

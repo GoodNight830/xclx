@@ -120,13 +120,56 @@ function systemPrompt() {
     '输出字段：summary, findings, nextPlan, uncertainty。findings字段严格使用 type,title,evidence,sampleCount,confidence,limitation,rangeMin,rangeMax,recommendation。nextPlan使用 action,rangeMin,rangeMax,suggestedQuestionCount,suggestedRatio,reevaluateAfterQuestions。'
 }
 
+/**
+ * 从模型输出中提取 JSON。
+ * 模型经常夹带 markdown 围栏、思考标签（<think>）或前后说明文字，
+ * 严格的「整串 JSON.parse」会把这些全判失败；这里改为括号配对抢救。
+ */
 function extractJson(text) {
-  const cleaned = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '')
-  try {
-    return JSON.parse(cleaned)
-  } catch (e) {
-    throw new Error('AI 返回的 JSON 不完整或格式有误')
+  const raw = String(text == null ? '' : text)
+  // 去掉思考段（部分模型即使未声明 reasoner 也会输出）
+  const cleaned = raw.replace(/<think>[\s\S]*?<\/think>/gi, '')
+  const fence = cleaned.match(/```(?:json)?\s*([\s\S]*?)```/i)
+  const candidates = []
+  if (fence) candidates.push(fence[1])
+  candidates.push(cleaned)
+
+  for (const candidate of candidates) {
+    const salvaged = extractBalancedJson(candidate)
+    if (salvaged) {
+      try {
+        return JSON.parse(salvaged)
+      } catch (e) { /* 换下一个候选继续试 */ }
+    }
   }
+  const err = new Error('AI 返回的 JSON 不完整或格式有误')
+  err.jsonError = true
+  throw err
+}
+
+/** 从文本里取第一个括号配对完整的 {...}；被截断（没有闭合）时返回空串 */
+function extractBalancedJson(text) {
+  const start = text.indexOf('{')
+  if (start === -1) return ''
+  let depth = 0
+  let inStr = false
+  let esc = false
+  for (let i = start; i < text.length; i += 1) {
+    const ch = text[i]
+    if (inStr) {
+      if (esc) esc = false
+      else if (ch === '\\') esc = true
+      else if (ch === '"') inStr = false
+      continue
+    }
+    if (ch === '"') inStr = true
+    else if (ch === '{') depth += 1
+    else if (ch === '}') {
+      depth -= 1
+      if (depth === 0) return text.slice(start, i + 1)
+    }
+  }
+  return ''
 }
 
 function assertString(value, field) {
@@ -391,12 +434,14 @@ async function requestAiReport(settings, diagnosis) {
   const deepSeek = isDeepSeek(settings)
   const deepSeekReasoner = deepSeek && (settings.model || '').toLowerCase().includes('reasoner')
   const effectiveMaxTokens = settings.reportDetail === 'short' ? Math.min(settings.maxOutputTokens, 600) : settings.maxOutputTokens
-  const retryMaxTokens = Math.min(4000, Math.max(effectiveMaxTokens * 2, 2000))
+  // 思考型模型（如 deepseek-flash）会先消耗大量 token 做推理，
+  // 重试时必须给到足够大的上限，否则两次都会在思考阶段就被截断
+  const retryMaxTokens = Math.min(8000, Math.max(effectiveMaxTokens * 3, 4000))
   let lastError = null
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
     const maxTokens = attempt === 0 ? effectiveMaxTokens : retryMaxTokens
-    const conciseInstruction = attempt === 0 ? '' : '\n上一次输出被截断。请缩短文字，每项只写一句话，确保 JSON 完整闭合。'
+    const conciseInstruction = attempt === 0 ? '' : '\n上一次输出不完整。请跳过任何思考过程的复述，直接输出 JSON，每项文字只写一句话，确保完整闭合。'
     const requestBody = {
       model: settings.model,
       max_tokens: maxTokens,
@@ -410,9 +455,21 @@ async function requestAiReport(settings, diagnosis) {
 
     try {
       const body = await performJsonRequest(settings, requestBody, 60000)
-      const content = body.choices && body.choices[0] && body.choices[0].message ? body.choices[0].message.content : null
-      if (!content) {
-        lastError = new Error('AI 服务没有返回报告内容')
+      const choice = body && body.choices && body.choices[0]
+      const message = (choice && choice.message) || {}
+      const finishReason = choice && choice.finish_reason
+      // 思考型模型可能把正文放在 reasoning_content；content 为空时兜底取一次
+      let content = message.content
+      if ((!content || !String(content).trim()) && message.reasoning_content) {
+        content = message.reasoning_content
+      }
+      if (!content || !String(content).trim()) {
+        const truncated = finishReason === 'length'
+        lastError = new Error(truncated
+          ? 'AI 的思考/输出超出了 max_tokens（本次上限 ' + maxTokens + '）被截断'
+          : 'AI 服务没有返回报告内容')
+        // 截断属于「可重试」问题：下一次尝试会提高 max_tokens
+        lastError.jsonError = truncated
       } else {
         try {
           return validateAiReport(extractJson(content), diagnosis)
@@ -426,11 +483,14 @@ async function requestAiReport(settings, diagnosis) {
       if (!isJsonParseFailure(e)) throw e
     }
   }
-  throw new Error('AI 连续两次返回了不完整的 JSON，请调高“最大输出量”或稍后重试')
+  throw new Error('AI 连续两次没有返回可用的 JSON。可在「设置 → AI 解读 → 最大输出量」调高上限后重试；若多次失败，建议换用非思考型模型（如 deepseek-chat 系列）')
 }
 
 function isJsonParseFailure(error) {
-  return error && error.cause instanceof SyntaxError
+  // 原实现依赖 error.cause（SyntaxError 的 cause 属性）——但小程序运行时里
+  // JSON.parse 抛出的错误不带 cause，JSON 提取错误又是手动 new 的，
+  // 导致「永远不算可重试的解析失败」。改为显式标志位 + 消息特征。
+  return Boolean(error && (error.jsonError || /JSON|结构不完整|缺少\s*\w+/.test(error.message || '')))
 }
 
 async function testAiConnection(settings) {

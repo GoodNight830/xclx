@@ -62,7 +62,8 @@ const DEFAULT_AI_SETTINGS = {
   autoAnalysis: 'off',
   reportDetail: 'standard',
   learningGoal: 'accuracy',
-  maxOutputTokens: 1200
+  // 思考型模型（deepseek-flash 等）会消耗大量 token 推理，1200 很容易被截断
+  maxOutputTokens: 2000
 }
 
 /** 默认应用设置 */

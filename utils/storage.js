@@ -292,7 +292,7 @@ function normalizeSettings(input) {
       autoAnalysis: autoOptions.includes(aiRaw.autoAnalysis) ? aiRaw.autoAnalysis : 'off',
       reportDetail: detailOptions.includes(aiRaw.reportDetail) ? aiRaw.reportDetail : 'standard',
       learningGoal: goalOptions.includes(aiRaw.learningGoal) ? aiRaw.learningGoal : 'accuracy',
-      maxOutputTokens: Math.round(clamp(Number(aiRaw.maxOutputTokens !== undefined ? aiRaw.maxOutputTokens : 1200), 300, 4000, 1200))
+      maxOutputTokens: Math.round(clamp(Number(aiRaw.maxOutputTokens !== undefined ? aiRaw.maxOutputTokens : 2000), 300, 8000, 2000))
     }
   }
 }

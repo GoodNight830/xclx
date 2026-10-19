@@ -163,6 +163,15 @@
           <switch checked="{{aiConsent}}" bindchange="onAiConsentChange" color="#2f9e6b" />
         </view>
 
+        <view class="st-slider-row st-row-noborder">
+          <view class="st-slider-head">
+            <view class="st-row-label">最大输出量</view>
+            <view class="st-slider-num">{{aiMaxTokens}} tokens</view>
+          </view>
+          <slider min="300" max="8000" step="100" value="{{aiMaxTokens}}" bindchange="onAiMaxTokensChange" activeColor="#2f9e6b" block-size="22" show-value="{{false}}" />
+          <view class="st-field-hint">AI 报告（含思考型模型的推理）超过该上限会被截断。遇到「JSON 不完整 / 被截断」提示时调高即可。</view>
+        </view>
+
         <view class="st-hint">API Key 仅保存在本机，不会随任何导出文件外泄。</view>
 
         <view class="st-act st-act-outline" hover-class="st-act-outline-hover" bindtap="testAi">
